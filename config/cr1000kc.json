@@ -1,0 +1,34 @@
+{
+  "devices": [
+    {
+      "server": {
+        "url": "192.168.1.18",
+        "port": 1502,
+        "id": 1
+      },
+      "elements": [
+        {
+          "description": "Port 1",
+          "type": "coil",
+          "address": 0,
+          "readonly": false,
+          "interval": 2000
+        },
+        {
+          "description": "Port 2",
+          "type": "coil",
+          "address": 1,
+          "readonly": false,
+          "interval": 2000
+        },
+        {
+          "description": "Port 22",
+          "type": "coil",
+          "address": 22222,
+          "readonly": false,
+          "interval": 1000
+        }
+      ]
+    }
+  ]
+}

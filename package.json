@@ -1,0 +1,19 @@
+{
+  "name": "modbus-client",
+  "version": "0.0.1",
+  "description": "Modbus client",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Christian Kuster",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "4.17.4",
+    "minimist": "^1.2.0",
+    "modbus-serial": "^7.0.3"
+  }
+}
