@@ -12,8 +12,14 @@
   "author": "Christian Kuster",
   "license": "MIT",
   "dependencies": {
+    "compression": "1.7.1",
+    "express": "4.16.2",
     "lodash": "4.17.4",
-    "minimist": "^1.2.0",
-    "modbus-serial": "^7.0.3"
+    "minimist": "1.2.0",
+    "modbus-serial": "7.0.3",
+    "pug": "2.0.0-rc.4",
+    "socket.io": "2.0.4",
+    "socket.io-client": "2.0.4",
+    "winston": "2.4.0"
   }
 }
