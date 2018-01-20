@@ -10,7 +10,11 @@ console.log(settings);
 
 let devices = [];
 settings.config.devices.forEach(d => {
-  devices.push(new ModbusDevice(d));
+  let md = new ModbusDevice(d);
+  md.on('changed', info => {
+    console.log(`Changed: ${info.address} ${info.prevValue} -> ${info.value}`);
+  });
+  devices.push(md);
 });
 
 console.log(devices);

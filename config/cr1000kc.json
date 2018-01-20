@@ -6,25 +6,23 @@
         "port": 1502,
         "id": 1
       },
+      "interval": 2000,
       "elements": [
         {
           "description": "Port 1",
           "type": "coil",
-          "address": 0,
-          "readonly": false,
-          "interval": 2000
+          "address": 0
         },
         {
           "description": "Port 2",
           "type": "coil",
           "address": 1,
-          "readonly": false,
-          "interval": 2000
+          "readonly": false
         },
         {
-          "description": "Port 22",
+          "description": "Port 3",
           "type": "coil",
-          "address": 22222,
+          "address": 3,
           "readonly": false,
           "interval": 1000
         }
