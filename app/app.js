@@ -14,6 +14,7 @@ const compression  = require('compression');
 const moment       = require('moment');
 const app          = express();
 const server       = require('http').Server(app);
+const socket       = require('./lib/modbusSocket')(server);
 const logger       = require('./lib/logger').getLogger('main:app');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,6 +34,7 @@ settings.config.devices.forEach(d => {
   let md = new ModbusDevice(d);
   md.on('changed', info => {
     logger.info(`Changed: ${info.address} ${info.prevValue} -> ${info.value}`);
+    socket.emit(info);
   });
   devices.push(md);
 });

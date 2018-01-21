@@ -5,7 +5,14 @@ block head
   script(src='/lib/jquery-3.3.1.min.js')
   script(src='/lib/popper.js')
   script(src='/lib/bootstrap/js/bootstrap.js')
+  script(src='/lib/vue.js')
+  script(src='/socket.io/socket.io.js')
+  script(src='/js/modbus-client.js')
 
+  script
+    | var settings=
+    != settings
+    | ;
 
 block content
   .container-fluid
