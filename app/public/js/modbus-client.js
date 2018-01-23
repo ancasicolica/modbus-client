@@ -9,20 +9,21 @@ Vue.component('modbus-list', {
 });
 
 Vue.component('modbus-device', {
-  props: ['device']
+  props   : ['device'],
+  template: '<div class="card"><div class="card-header">{{device.description}}</div><div class="card-body"><modbus-list v-bind:list="device.elements"></modbus-list></div></div>'
 });
 
 var modbusApp = new Vue({
   el     : '#modbus-app',
   data   : {
     settings: settings,
-    devices :[]
+    devices : []
   },
   // App is created, fill in the settings
   created: function () {
     this.devices = _.get(settings, 'config.devices', []);
-    this.devices.forEach(function(d) {
-      d.elements.forEach(function(e) {
+    this.devices.forEach(function (d) {
+      d.elements.forEach(function (e) {
         e.type = 'init';
       });
     });
@@ -36,7 +37,7 @@ var modbusApp = new Vue({
       for (var t = 0; t < this.devices.length; t++) {
         var i = _.findIndex(this.devices[t].elements, {address: d.address});
         if (i >= 0) {
-          console.log('item',this.devices[t].elements[i]);
+          console.log('item', this.devices[t].elements[i]);
           this.$set(this.devices[t].elements, i, _.assign({}, this.devices[t].elements[i], d)); // otherwise it won't update in the component
         }
         else {

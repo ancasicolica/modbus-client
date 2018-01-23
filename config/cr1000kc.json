@@ -1,6 +1,7 @@
 {
   "devices": [
     {
+      "description": "Campbell CR1000",
       "server": {
         "url": "192.168.1.18",
         "port": 1502,
@@ -23,8 +24,31 @@
           "description": "Port 3",
           "type": "coil",
           "address": 3,
-          "readonly": false,
-          "interval": 1000
+          "interval": 2000
+        },
+        {
+          "description": "Port 4",
+          "type": "coil",
+          "address": 4,
+          "interval": 2000
+        },
+        {
+          "description": "Port 5",
+          "type": "coil",
+          "address": 5,
+          "interval": 3000
+        },
+        {
+          "description": "Port 6",
+          "type": "coil",
+          "address": 6,
+          "interval": 3000
+        },
+        {
+          "description": "Port 7",
+          "type": "coil",
+          "address": 7,
+          "interval": 3500
         }
       ]
     }

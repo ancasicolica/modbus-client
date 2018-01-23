@@ -5,6 +5,7 @@
 const _            = require('lodash');
 const EventEmitter = require('events').EventEmitter;
 const util         = require('util');
+const logger       = require('./logger').getLogger('lib:modbusElement');
 
 function ModbusElement(client, element) {
   EventEmitter.call(this);
@@ -17,25 +18,50 @@ function ModbusElement(client, element) {
   this.interval    = _.get(element, 'interval', _.get(client, 'inverval', 5000));
   this.value       = undefined; // This is the value of the element
   this.prevValue   = undefined; // Helps detecting changes
+  this.collector   = undefined;
   let self         = this;
+
+  logger.debug(`Add: a=${this.address} t=${this.type} i=${this.interval}`);
 
   switch (this.type) {
     case 'coil':
-      setInterval(function () {
-        self.client.readCoils(self.address, 1, function (err, data) {
+
+    function readCoil(callback) {
+      self.client.readCoils(self.address, 1, function (err, data) {
+        if (err) {
+          logger.error(err);
+        }
+        else {
+         // logger.debug(`rc: ${self.address} ${data.value}`);
           self.value = _.get(data, 'data[0]', undefined);
           // In case of a changed value: emit new data
           if (self.value !== self.prevValue) {
             self.emit('changed', self.getObject());
             self.prevValue = self.value;
           }
-          // console.log(self.description, self.value);
-        });
-      }, self.interval);
+         // console.log(self.description, self.value);
+        }
+        callback(err);
+      });
+    }
+
+      this.collector = readCoil;
   }
 }
 
 util.inherits(ModbusElement, EventEmitter);
+
+/**
+ * Collects the data
+ * @param callback
+ * @returns {*}
+ */
+ModbusElement.prototype.collect = function (callback) {
+  if (this.collector) {
+    return this.collector(callback);
+  }
+  callback(null);
+};
 
 /**
  * Set the value of an element
