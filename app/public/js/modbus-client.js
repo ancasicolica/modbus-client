@@ -1,6 +1,6 @@
 Vue.component('modbus-item', {
   props   : ['item'],
-  template: '<div>a: {{ item.data.type }} {{ item.address }} {{ item.data.value ? "1":"0"}}</div>'
+  template: '<div>a: {{item.type}} {{ item.address }} {{ item.value ? "x1":"x0"}}</div>'
 });
 
 Vue.component('modbus-list', {
@@ -8,42 +8,47 @@ Vue.component('modbus-list', {
   template: '<div><modbus-item v-for="item in list" v-bind:item="item" v-bind:key="item.address"> </modbus-item> </div>'
 });
 
+Vue.component('modbus-device', {
+  props: ['device']
+});
+
 var modbusApp = new Vue({
-      el     : '#modbus-app',
-      data   : {
-        settings: settings,
-        view    : []
-      },
-      // App is created, fill in the settings
-      created: function () {
-        var self     = this;
-        var elements = _.get(settings, 'config.devices[0].elements', []);
-        elements.forEach(function (e) {
-          e.data = {
-            type: 'ndef'
-          };
-
-          self.view.push(e);
-        });
-      },
+  el     : '#modbus-app',
+  data   : {
+    settings: settings,
+    devices :[]
+  },
+  // App is created, fill in the settings
+  created: function () {
+    this.devices = _.get(settings, 'config.devices', []);
+    this.devices.forEach(function(d) {
+      d.elements.forEach(function(e) {
+        e.type = 'init';
+      });
+    });
+  },
 
 
-      methods: {
-        updateData: function (d) {
-          var self = this;
-          console.log('ud', d);
-          var i = _.findIndex(this.view, {address: d.address});
-          if (i >= 0) {
-            this.$set(this.view, i, _.assign({}, this.view[i], {data: d})); // otherwise it won't update in the component
-          }
-          else {
-            console.warn('Element not found', d);
-          }
+  methods: {
+    updateData: function (d) {
+      var self = this;
+      console.log('ud', d);
+      for (var t = 0; t < this.devices.length; t++) {
+        var i = _.findIndex(this.devices[t].elements, {address: d.address});
+        if (i >= 0) {
+          console.log('item',this.devices[t].elements[i]);
+          this.$set(this.devices[t].elements, i, _.assign({}, this.devices[t].elements[i], d)); // otherwise it won't update in the component
+        }
+        else {
+          console.warn('Element not found', d);
         }
       }
-    })
-;
+    }
+  }
+});
 
-
+/*
+  Socket.io connection handling
+ */
 var socket = io();
 socket.on('data', modbusApp.updateData);

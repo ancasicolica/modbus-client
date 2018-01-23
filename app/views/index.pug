@@ -18,7 +18,7 @@ block head
 block content
   .container-fluid#modbus-app
     h1 Modbus Client
-    modbus-list(v-bind:list='view')
+    modbus-list(v-bind:list='devices[0].elements')
 
   script(src='/js/modbus-client.js')
 
