@@ -40,34 +40,53 @@ function ModbusDevice(device) {
     }
   });
 
-  this.client.connectTCP(this.url, {port: this.port}, (err) => {
-    logger.info('TCP OPEN', err);
-    self.collect(err => {
-      if (err) {
-        logger.error(err);
-      }
-      // Start collection
-      setInterval(function () {
-        self.collect(err => {
-          if (err) {
-            logger.error(err);
-          }
-        })
-      }, self.interval);
-    });
+  self.connect(err => {
+    // Start collection
+    setInterval(function () {
+      self.collect(err => {
+        if (err) {
+          logger.error(err);
+        }
+      })
+    }, self.interval);
   });
-
-
 }
 
 util.inherits(ModbusDevice, EventEmitter);
+
+ModbusDevice.prototype.connect = function (callback) {
+  let self = this;
+  self.client.connectTCP(self.url, {port: self.port}, (err) => {
+    if (err) {
+      logger.error(err);
+      return callback(err);
+    }
+    // Just after connecting, collect data immediately
+    self.collect(callback);
+  });
+};
 
 /**
  * Collects all data
  * @param callback
  */
 ModbusDevice.prototype.collect = function (callback) {
-  async.waterfall(this.collectors, callback);
+  let self = this;
+  async.waterfall(self.collectors, callback);
+};
+
+ModbusDevice.prototype.getData = function () {
+  let retVal = {
+    url     : this.url,
+    port    : this.port,
+    id      : this.id,
+    interval: this.interval,
+    elements: []
+  };
+  this.elements.forEach(e => {
+    retVal.elements.push(e.getObject());
+  });
+  return retVal;
 };
 
 module.exports = ModbusDevice;

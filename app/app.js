@@ -5,17 +5,17 @@ Main app file for modbus-client
  */
 
 
-const settings     = require('./settings');
-const ModbusDevice = require('./lib/modbusDevice');
-const express      = require('express');
-const path         = require('path');
-const morgan       = require('morgan');
-const compression  = require('compression');
-const moment       = require('moment');
-const app          = express();
-const server       = require('http').Server(app);
-const socket       = require('./lib/modbusSocket')(server);
-const logger       = require('./lib/logger').getLogger('main:app');
+const settings      = require('./settings');
+const express       = require('express');
+const path          = require('path');
+const morgan        = require('morgan');
+const compression   = require('compression');
+const moment        = require('moment');
+const app           = express();
+const server        = require('http').Server(app);
+const socket        = require('./lib/modbusSocket')(server);
+const modbusDevices = require('./lib/modbusDevices');
+const logger        = require('./lib/logger').getLogger('lib:app');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -29,19 +29,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', require('./routes/index'));
 console.log(settings);
 
-let devices = [];
-settings.config.devices.forEach(d => {
-  let md = new ModbusDevice(d);
-  md.on('changed', info => {
-    logger.info(`Changed: ${info.address} ${info.prevValue} -> ${info.value}`);
-    socket.emit(info);
+modbusDevices.init(settings, socket, err => {
+  if (err) {
+    logger.error(err);
+  }
+  server.listen(settings.port, 'localhost', () => {
+    logger.info(`Server started on Port ${settings.port}`)
   });
-  devices.push(md);
 });
 
-
-server.listen(8080, 'localhost', () => {
-  logger.info('%s: Node server started on %s:%d ...',
-    new Date(Date.now()), app.get('ip'), app.get('port'));
-
-});

@@ -20,6 +20,7 @@ let settings = {
   appName: pkg.title,
   version: pkg.version,
   debug  : (process.env.NODE_ENV !== 'production' || process.env.DEBUG) ? true : false,
+  port   : 8080,
   config : require(configFile)
 };
 

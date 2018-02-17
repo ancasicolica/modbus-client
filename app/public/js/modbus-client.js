@@ -31,6 +31,8 @@ var modbusApp = new Vue({
 
 
   methods: {
+    /* Updates data of ONE SINGLE element
+    */
     updateData: function (d) {
       var self = this;
       console.log('ud', d);
@@ -44,6 +46,14 @@ var modbusApp = new Vue({
           console.warn('Element not found', d);
         }
       }
+    },
+    /* Initializes all data, get complete dataset*/
+    initData  : function (data) {
+      var self = this;
+      console.warn(data);
+      data.devices.forEach(function (device) {
+        device.elements.forEach(self.updateData)
+      });
     }
   }
 });
@@ -53,3 +63,4 @@ var modbusApp = new Vue({
  */
 var socket = io();
 socket.on('data', modbusApp.updateData);
+socket.on('init-data', modbusApp.initData);

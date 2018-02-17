@@ -32,14 +32,14 @@ function ModbusElement(client, element) {
           logger.error(err);
         }
         else {
-         // logger.debug(`rc: ${self.address} ${data.value}`);
+          // logger.debug(`rc: ${self.address} ${data.value}`);
           self.value = _.get(data, 'data[0]', undefined);
           // In case of a changed value: emit new data
           if (self.value !== self.prevValue) {
             self.emit('changed', self.getObject());
             self.prevValue = self.value;
           }
-         // console.log(self.description, self.value);
+          // console.log(self.description, self.value);
         }
         callback(err);
       });

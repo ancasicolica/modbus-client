@@ -4,10 +4,11 @@
 
 let io;
 
-const logger       = require('./logger').getLogger('lib:modbusSocket');
-const EventEmitter = require('events').EventEmitter;
-const util         = require('util');
-const _            = require('lodash');
+const logger        = require('./logger').getLogger('lib:modbusSocket');
+const EventEmitter  = require('events').EventEmitter;
+const util          = require('util');
+const _             = require('lodash');
+const modbusDevices = require('./modbusDevices');
 
 /**
  * Class for the socket
@@ -25,6 +26,8 @@ function ModbusSocket(server) {
     logger.info(`Socket added: ${socket.id}`);
     self.sockets.push(socket);
 
+    socket.emit('init-data', modbusDevices.getAllData());
+
     socket.on('disconnect', () => {
       logger.info(`Socket removed: ${socket.id}`);
       _.pull(self.sockets, socket)
@@ -40,7 +43,7 @@ util.inherits(ModbusSocket, EventEmitter);
  * @param data
  */
 ModbusSocket.prototype.emit = function (data) {
-  logger.debug('Socket: emit data');
+  logger.debug('Socket: emit data', data);
   this.sockets.forEach(s => {
     s.emit('data', data);
   });
