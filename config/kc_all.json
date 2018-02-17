@@ -1,0 +1,113 @@
+{
+  "devices": [
+    {
+      "description": "Campbell CR1000",
+      "server": {
+        "url": "192.168.1.18",
+        "port": 1502,
+        "id": 1
+      },
+      "interval": 8000,
+      "elements": [
+        {
+          "description": "Port 1",
+          "type": "coil",
+          "address": 0
+        },
+        {
+          "description": "Port 2",
+          "type": "coil",
+          "address": 1,
+          "readonly": false
+        },
+        {
+          "description": "Port 3",
+          "type": "coil",
+          "address": 3,
+          "interval": 2000
+        },
+        {
+          "description": "Port 4",
+          "type": "coil",
+          "address": 4,
+          "interval": 2000
+        },
+        {
+          "description": "Port 5",
+          "type": "coil",
+          "address": 5,
+          "interval": 3000
+        },
+        {
+          "description": "Port 6",
+          "type": "coil",
+          "address": 6,
+          "interval": 3000
+        },
+        {
+          "description": "Port 7",
+          "type": "coil",
+          "address": 7,
+          "interval": 3500
+        }
+      ]
+    },
+    {
+      "description": "Moxa E1212",
+      "server": {
+        "url": "192.168.1.19",
+        "port": 502,
+        "id": 1
+      },
+      "interval": 2000,
+      "elements": [
+        {
+          "description": "DI-Register",
+          "type": "inputRegister",
+          "address": 48
+        },
+        {
+          "description": "Model-Name",
+          "type": "inputRegister",
+          "parser": "string",
+          "length": 10,
+          "address": 5000
+        },
+        {
+          "description": "Device-Name",
+          "type": "inputRegister",
+          "parser": "string",
+          "length": 30,
+          "address": 5040
+        },
+        {
+          "description": "Firmware-Version",
+          "type": "inputRegister",
+          "parser": "hex-string",
+          "length": 2,
+          "address": 5029
+        },
+        {
+          "description": "IP-Address",
+          "type": "inputRegister",
+          "parser": "ip-address",
+          "length": 2,
+          "address": 5027
+        },
+        {
+          "description": "MAC-Address",
+          "type": "inputRegister",
+          "parser": "mac-address",
+          "length": 3,
+          "address": 5024
+        },
+        {
+          "description": "Device Up Time",
+          "type": "inputRegister",
+          "length": 2,
+          "address": 5020
+        }
+      ]
+    }
+  ]
+}

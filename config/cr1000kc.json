@@ -7,7 +7,7 @@
         "port": 1502,
         "id": 1
       },
-      "interval": 2000,
+      "interval": 8000,
       "elements": [
         {
           "description": "Port 1",
