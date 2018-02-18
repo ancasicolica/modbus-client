@@ -12,7 +12,12 @@ Vue.component('modbus-list', {
 
 Vue.component('modbus-device', {
   props   : ['device'],
-  template: '<div class="card"><div class="card-header">{{device.description}}</div><div class="card-body"><modbus-list v-bind:list="device.elements"></modbus-list></div></div>'
+  template: '<div class="card device"><div class="card-header">{{device.description}}</div><div class="card-body"><modbus-list v-bind:list="device.elements"></modbus-list></div></div>'
+});
+
+Vue.component('modbus-devices', {
+  props: ['devices'],
+  template: '<div><modbus-device v-for="device in devices" v-bind:device="device"></modbus-device></div>'
 });
 
 var modbusApp = new Vue({
