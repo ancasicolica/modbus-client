@@ -18,6 +18,7 @@ function ModbusElement(client, element) {
   this.length      = _.get(element, 'length', 1);
   this.interval    = _.get(element, 'interval', _.get(client, 'inverval', 5000));
   this.parser      = _.get(element, 'parser', 'word');
+  this.id          = _.get(element, 'id', -1);
   this.value       = undefined; // This is the value of the element
   this.prevValue   = undefined; // Helps detecting changes
   this.collector   = undefined;
@@ -69,6 +70,7 @@ function ModbusElement(client, element) {
               // word: MSB first, print value in dec
               self.value = 256 * _.get(data, 'data[0]', 0);
               self.value += _.get(data, 'data[1]', 0);
+              logger.debug('XXXX ' + data.data[0] + '-' + data.data[1]);
               break;
 
             case 'hex-string':
@@ -90,7 +92,7 @@ function ModbusElement(client, element) {
               data.buffer.forEach(function (b) {
                 self.value += b.toString(16) + ':';
               });
-              self.value = _.trim(self.value,':');
+              self.value = _.trim(self.value, ':');
               break;
 
             case 'string':
@@ -175,7 +177,8 @@ ModbusElement.prototype.getObject = function () {
     channel    : self.channel,
     readOnly   : self.readonly,
     value      : self.value,
-    prevValue  : self.prevValue
+    prevValue  : self.prevValue,
+    id         : self.id
   };
 };
 

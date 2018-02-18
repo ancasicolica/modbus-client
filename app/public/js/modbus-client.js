@@ -7,12 +7,12 @@ Vue.component('modbus-item', {
 
 Vue.component('modbus-list', {
   props   : ['list'],
-  template: '<div><modbus-item v-for="item in list" v-bind:item="item" v-bind:key="item.address"> </modbus-item> </div>'
+  template: '<div><modbus-item v-for="item in list" v-bind:item="item" v-bind:key="item.id"> </modbus-item> </div>'
 });
 
 Vue.component('modbus-device', {
   props   : ['device'],
-  template: '<div class="card device"><div class="card-header">{{device.description}}</div><div class="card-body"><modbus-list v-bind:list="device.elements"></modbus-list></div></div>'
+  template: '<div class="card device"><div class="card-header">{{device.description}}</div><div class="card-body"><modbus-list v-bind:list="device.elements" v-bind:key="device.id"></modbus-list></div></div>'
 });
 
 Vue.component('modbus-devices', {
@@ -44,7 +44,7 @@ var modbusApp = new Vue({
       var self = this;
       console.log('ud', d);
       for (var t = 0; t < this.devices.length; t++) {
-        var i = _.findIndex(this.devices[t].elements, {address: d.address});
+        var i = _.findIndex(this.devices[t].elements, {id: d.id});
         if (i >= 0) {
           console.log('item', this.devices[t].elements[i]);
           this.$set(this.devices[t].elements, i, _.assign({}, this.devices[t].elements[i], d)); // otherwise it won't update in the component

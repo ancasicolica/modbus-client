@@ -49,6 +49,27 @@
           "type": "coil",
           "address": 7,
           "interval": 3500
+        },
+        {
+          "description": "Voltage",
+          "type": "inputRegister",
+          "parser": "byte",
+          "length": 1,
+          "address": 0
+        },
+        {
+          "description": "Temperature",
+          "type": "inputRegister",
+          "parser": "byte",
+          "length": 1,
+          "address": 1
+        },
+        {
+          "description": "Counter",
+          "type": "inputRegister",
+          "parser": "byte",
+          "length": 1,
+          "address": 2
         }
       ]
     },

@@ -25,6 +25,15 @@ let settings = {
 };
 
 
+// Add ids to the configuration
+let i = 1;
+settings.config.devices.forEach(d => {
+  d.id = i++;
+  d.elements.forEach(e => {
+    e.id = i++;
+  });
+});
+
 module.exports = settings;
 
 
