@@ -27,7 +27,7 @@ The devices object has the following properties:
 |_description_| String used for the title of the server |
 |_server_| Object with the URL and port of the server |
 |_interval_| The data is read out in this interval (ms) |
-|_elements| Array with element configuration objects |
+|_elements_| Array with element configuration objects |
 
 #### _element configuration_ object
 
@@ -41,7 +41,15 @@ The devices object has the following properties:
 
 ### _parser_ options
 
-Todo
+ * int8, uint8: one byte, decimal
+ * int16, uint16: 2 byte value, decimal
+ * int32, uint32: 4 byte value, decimal
+ * float
+ * hex-string: displaying _length_ bytes in hexadecimal notation
+ * ip-address: a 4 byte string displayed as IP address
+ * mac-address: a 6 byte value displayed as MAC address
+ * string: displaying _length_ bytes parsed as string  
+ 
 
 ## Licence
 

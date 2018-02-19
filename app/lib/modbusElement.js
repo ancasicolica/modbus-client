@@ -28,6 +28,12 @@ function getLength(parser) {
     case 'float':
       return 2;
 
+    case 'ip-address':
+      return 2;
+
+    case 'mac-address':
+      return 3;
+
     default:
       return -1;
   }

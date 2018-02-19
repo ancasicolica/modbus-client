@@ -23,53 +23,45 @@
         {
           "description": "Port 3",
           "type": "coil",
-          "address": 3,
-          "interval": 2000
+          "address": 3
         },
         {
           "description": "Port 4",
           "type": "coil",
-          "address": 4,
-          "interval": 2000
+          "address": 4
         },
         {
           "description": "Port 5",
           "type": "coil",
-          "address": 5,
-          "interval": 3000
+          "address": 5
         },
         {
           "description": "Port 6",
           "type": "coil",
-          "address": 6,
-          "interval": 3000
+          "address": 6
         },
         {
           "description": "Port 7",
           "type": "coil",
-          "address": 7,
-          "interval": 3500
+          "address": 7
         },
         {
           "description": "Voltage",
           "type": "inputRegister",
-          "parser": "byte",
-          "length": 1,
-          "address": 0
+          "parser": "float",
+          "address": 1
         },
         {
           "description": "Temperature",
           "type": "inputRegister",
-          "parser": "byte",
-          "length": 1,
-          "address": 1
+          "parser": "float",
+          "address": 5
         },
         {
           "description": "Counter",
           "type": "inputRegister",
-          "parser": "byte",
-          "length": 1,
-          "address": 2
+          "parser": "float",
+          "address": 9
         }
       ]
     },
@@ -112,14 +104,12 @@
           "description": "IP-Address",
           "type": "inputRegister",
           "parser": "ip-address",
-          "length": 2,
           "address": 5027
         },
         {
           "description": "MAC-Address",
           "type": "inputRegister",
           "parser": "mac-address",
-          "length": 3,
           "address": 5024
         },
         {
