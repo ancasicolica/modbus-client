@@ -43,7 +43,7 @@ util.inherits(ModbusSocket, EventEmitter);
  * @param data
  */
 ModbusSocket.prototype.emit = function (data) {
-  logger.debug('Socket: emit data', data);
+  // logger.debug('Socket: emit data', data);
   this.sockets.forEach(s => {
     s.emit('data', data);
   });

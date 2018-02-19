@@ -7,6 +7,38 @@ const EventEmitter = require('events').EventEmitter;
 const util         = require('util');
 const logger       = require('./logger').getLogger('lib:modbusElement');
 
+/**
+ * Determing the standard lenght to read out depending on the Parser
+ * @param parser
+ * @returns {number}
+ */
+function getLength(parser) {
+
+  switch (parser) {
+    case 'uint8':
+    case 'byte':
+      return 1;
+
+    case 'uint16':
+    case 'int16':
+      return 1;
+
+    case 'int32':
+    case 'uint32':
+    case 'float':
+      return 2;
+
+    default:
+      return -1;
+  }
+}
+
+/**
+ * Constructor for the modbus element
+ * @param client
+ * @param element
+ * @constructor
+ */
 function ModbusElement(client, element) {
   EventEmitter.call(this);
   this.client      = client;
@@ -15,18 +47,21 @@ function ModbusElement(client, element) {
   this.address     = _.get(element, 'address', 552);
   this.channel     = _.get(element, 'channel', 1);
   this.readonly    = _.get(element, 'readonly', true);
-  this.length      = _.get(element, 'length', 1);
   this.interval    = _.get(element, 'interval', _.get(client, 'inverval', 5000));
-  this.parser      = _.get(element, 'parser', 'word');
+  this.parser      = _.get(element, 'parser', 'byte');
+  this.length      = _.get(element, 'length', getLength(this.parser));
   this.id          = _.get(element, 'id', -1);
   this.value       = undefined; // This is the value of the element
   this.prevValue   = undefined; // Helps detecting changes
   this.collector   = undefined;
-  let self         = this;
+
+
+  let self = this;
 
   logger.debug(`Add: a=${this.address} t=${this.type} i=${this.interval}`);
 
   switch (this.type) {
+    // Coils ----------------------------------------------
     case 'coil':
 
     function readCoil(callback) {
@@ -51,26 +86,47 @@ function ModbusElement(client, element) {
       this.collector = readCoil;
       break;
 
+    // INPUT REGISTER  ------------------------------------
     case 'inputRegister':
 
     function readInputRegister(callback) {
       self.client.readInputRegisters(self.address, self.length, function (err, data) {
         if (err) {
-          logger.error(err);
+          return callback(err);
         }
         else {
           // logger.debug(`rc: ${self.address} ${data.value}`);
           switch (self.parser) {
+            case 'uint8':
             case 'byte':
               // byte: just one byte value, print value in dec
               self.value = _.get(data, 'data[0]', 0);
               break;
 
-            case 'word':
+            case 'int16':
+              // uint16: MSB first, print value in dec
+              self.value = data.buffer.readInt16BE(0).toString();
+              break;
+
+            case 'uint16':
+              // uint16: MSB first, print value in dec
+              self.value = data.buffer.readUInt16BE(0).toString();
+              break;
+
+            case 'int32':
               // word: MSB first, print value in dec
-              self.value = 256 * _.get(data, 'data[0]', 0);
-              self.value += _.get(data, 'data[1]', 0);
-              logger.debug('XXXX ' + data.data[0] + '-' + data.data[1]);
+              self.value = data.buffer.readInt32BE(0).toString();
+              break;
+
+            case 'uint32':
+              // word: MSB first, print value in dec
+              self.value = data.buffer.readUInt32BE(0).toString();
+              break;
+
+            case 'float':
+              // float: MSB first, print value in dec
+              logger.info('FLOAT ' + self.address, data.buffer);
+              self.value = data.buffer.readFloatBE(0).toString();
               break;
 
             case 'hex-string':
@@ -107,7 +163,6 @@ function ModbusElement(client, element) {
             self.emit('changed', self.getObject());
             self.prevValue = self.value;
           }
-          // console.log(self.description, self.value);
         }
         callback(err);
       });
