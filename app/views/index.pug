@@ -17,46 +17,81 @@ block head
     | ;
 
 block content
-  include modal-about.pug
+  #modbus-app
+    include modal-about.pug
+    include modal-edit.pug
 
-  .container-fluid#modbus-app
-    .navbar.navbar-expand-lg.navbar-light.bg-light
-      .navbar-brand {{settings.config.title}}
-      button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav', aria-controls='navbarNav', aria-expanded='false', aria-label='Toggle navigation')
-        span.navbar-toggler-icon
-      .collapse.navbar-collapse#navbarNav
-        ul.navbar-nav.mr-auto
-          li.nav-item
-            a.nav-link(href='#', v-on:click='view = 0') Registers
-          li.nav-item
-            a.nav-link(href='#', v-on:click='view = 1') Devices
-          li.nav-item
-            a.nav-link(href='#', data-toggle='modal', data-target='#aboutModal')
-              | About
+    .container-fluid
+      .navbar.navbar-expand-lg.navbar-light.bg-light
+        .navbar-brand {{settings.config.title}}
+        button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav', aria-controls='navbarNav', aria-expanded='false', aria-label='Toggle navigation')
+          span.navbar-toggler-icon
+        .collapse.navbar-collapse#navbarNav
+          ul.navbar-nav.mr-auto
+            li.nav-item
+              a.nav-link(href='#', v-on:click='view = 0') Registers
+            li.nav-item
+              a.nav-link(href='#', v-on:click='view = 1') Devices
+            li.nav-item
+              a.nav-link(href='#', data-toggle='modal', data-target='#aboutModal')
+                | About
 
 
-    div(v-if='view === 0')
-      // List with the devices and the registers, implemented as components
-      modbus-devices(v-bind:devices='devices')
-    div(v-if='view === 1')
-      // List with the devices and their properties, not using components
-      h1 Device Info
-      div(v-for='device in devices' v-bind:key='device.id')
-        h3 {{device.description}}
+      div(v-if='view === 0')
+        // List with the devices and the registers
+        .card.device(v-for='device in devices' v-bind:device='device')
+          .card-header {{device.description}}
+          .card-body
+            .row(v-for='item in device.elements' v-bind:key='item.id')
+              .col-sm-6.col-md-6.item-description(v-on:click='edit(item)') {{item.description}}
+              .col-sm-2.col-md-2 {{item.address}}
+              .col-sm-4.col-md-4 {{item.value}}
+
+      div(v-if='view === 1')
+        // List with the devices and their properties
+        h1 Device Info
+        div(v-for='device in devices' v-bind:key='device.id')
+          h3 {{device.description}}
+          table.table
+            tbody
+              tr
+                td URL
+                td {{device.server.url}}
+              tr
+                td Port
+                td {{device.server.port}}
+              tr
+                td Collection Interval [ms]
+                td {{device.interval}}
+              tr
+                td Elements
+                td {{device.elements.length}}
+      div(v-if='view === 2')
+        h2 {{currentItem.description}}
         table.table
           tbody
             tr
-              td URL
-              td {{device.server.url}}
+              td Current value
+              td {{currentItem.value}}
             tr
-              td Port
-              td {{device.server.port}}
+              td Parser
+              td {{currentItem.parser}}
             tr
-              td Collection Interval [ms]
-              td {{device.interval}}
+              td Address
+              td {{currentItem.address}}
             tr
-              td Elements
-              td {{device.elements.length}}
+              td Length
+              td {{currentItem.length}}
+            tr
+              td Type
+              td {{currentItem.type}}
+            tr
+              td Read Only
+              td {{currentItem.readOnly}}
+            tr
+              td Device
+              td {{getDeviceForElement(currentItem).description}}
+        button.btn.btn-primary(type='button' v-on:click='view=0') back
 
 
   script(src='/js/modbus-client.js')

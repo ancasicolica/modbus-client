@@ -239,6 +239,8 @@ ModbusElement.prototype.getObject = function () {
     readOnly   : self.readonly,
     value      : self.value,
     prevValue  : self.prevValue,
+    parser     : self.parser,
+    length     : self.length,
     id         : self.id
   };
 };

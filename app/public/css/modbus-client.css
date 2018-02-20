@@ -1,3 +1,7 @@
 .device {
     margin-bottom: 20px;
 }
+
+.item-description {
+    cursor: pointer;
+}
