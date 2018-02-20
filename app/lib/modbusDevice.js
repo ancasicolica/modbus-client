@@ -26,7 +26,6 @@ function ModbusDevice(device) {
 
   this.collectors = [];
 
-  this.collectorInterval = undefined;
 
   this.elements = [];
   let self      = this;
