@@ -20,6 +20,8 @@ Vue.component('modbus-devices', {
   template: '<div><modbus-device v-for="device in devices" v-bind:device="device"></modbus-device></div>'
 });
 
+
+
 var modbusApp = new Vue({
   el     : '#modbus-app',
   data   : {
