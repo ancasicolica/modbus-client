@@ -1,8 +1,6 @@
 Vue.component('modbus-item', {
   props   : ['item'],
   template: '<div class="row"><div class="col-sm-6 col-md-6">{{item.description}} </div><div class="col-sm-2 col-md-2">{{ item.address }}</div><div class="col-sm-4 col-md-4">{{item.value}}</div></div>'
-
-
 });
 
 Vue.component('modbus-list', {
