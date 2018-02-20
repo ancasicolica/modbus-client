@@ -17,7 +17,7 @@
     "express": "4.16.2",
     "lodash": "4.17.4",
     "minimist": "1.2.0",
-    "modbus-serial": "7.0.3",
+    "modbus-serial": "7.1.5",
     "moment": "2.20.1",
     "morgan": "1.9.0",
     "pug": "2.0.0-rc.4",

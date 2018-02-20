@@ -77,7 +77,7 @@ async-limiter@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
 
-async@^2.6.0:
+async@2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.0.tgz#61a29abb6fcc026fea77e56d1c6ec53a795951f4"
   dependencies:
@@ -624,9 +624,9 @@ mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
-modbus-serial@7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/modbus-serial/-/modbus-serial-7.0.3.tgz#29e1d0cc102de6b3ed88b37deda0f52f846e54ee"
+modbus-serial@7.1.5:
+  version "7.1.5"
+  resolved "https://registry.yarnpkg.com/modbus-serial/-/modbus-serial-7.1.5.tgz#48c10db4236c5548b744f295895e8c864d1e3c9e"
   dependencies:
     debug "^3.0.1"
     serialport "^6.0.4"

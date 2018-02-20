@@ -26,6 +26,8 @@ function ModbusDevice(device) {
 
   this.collectors = [];
 
+  this.collectorInterval = undefined;
+
   this.elements = [];
   let self      = this;
   let elements  = _.get(device, 'elements', []);
@@ -39,21 +41,14 @@ function ModbusDevice(device) {
       this.elements.push(me);
     }
   });
-
-  self.connect(err => {
-    // Start collection
-    setInterval(function () {
-      self.collect(err => {
-        if (err) {
-          logger.error(err);
-        }
-      })
-    }, self.interval);
-  });
 }
 
 util.inherits(ModbusDevice, EventEmitter);
 
+/**
+ * Connect to the server
+ * @param callback
+ */
 ModbusDevice.prototype.connect = function (callback) {
   let self = this;
   self.client.connectTCP(self.url, {port: self.port}, (err) => {
@@ -61,9 +56,24 @@ ModbusDevice.prototype.connect = function (callback) {
       logger.error(err);
       return callback(err);
     }
+    self.emit('connected', self);
     // Just after connecting, collect data immediately
-    self.collect(callback);
+    self.periodicCollection();
+    callback();
   });
+};
+
+/**
+ * Disconnect from the server
+ * @param callback
+ */
+ModbusDevice.prototype.disconnect = function (callback) {
+  let self = this;
+  if (self.client.isOpen) {
+    self.client.close(err => {
+      self.emit('disconnected', err);
+    });
+  }
 };
 
 /**
@@ -72,9 +82,33 @@ ModbusDevice.prototype.connect = function (callback) {
  */
 ModbusDevice.prototype.collect = function (callback) {
   let self = this;
+  if (!self.client.isOpen) {
+    self.emit('disconnected');
+    return callback(new Error('Client is disconnected'));
+  }
   async.waterfall(self.collectors, callback);
 };
 
+/**
+ * Periodic collection: start interval for collection
+ */
+ModbusDevice.prototype.periodicCollection = function () {
+  let self = this;
+
+  self.collect(err => {
+    if (err) {
+      logger.error('Collection error', err);
+    }
+    if (self.client.isOpen) {
+      _.delay(self.periodicCollection.bind(self), self.interval);
+    }
+  });
+};
+
+/**
+ * Get the current data of the device
+ * @returns {{url: *, port: *, id: *, interval: *, elements: Array}}
+ */
 ModbusDevice.prototype.getData = function () {
   let retVal = {
     url     : this.url,
