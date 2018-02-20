@@ -1,0 +1,13 @@
+#aboutModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='aboutModalLabel', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#aboutModalLabel.modal-title About modbus-client
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+      .modal-body
+        p Git Repository: &nbsp;
+          a(href='https://github.com/ancasicolica/modbus-client' target='_blank') https://github.com/ancasicolica/modbus-client
+        p © 2018 Christian Kuster, CH-8342 Wernetshausen
+      .modal-footer
+        button.btn.btn-primary(type='button', data-dismiss='modal') Close

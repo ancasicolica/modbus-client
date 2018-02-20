@@ -17,10 +17,27 @@ block head
     | ;
 
 block content
-  .container-fluid#modbus-app
-    h1 {{settings.config.title}}
-    modbus-devices(v-bind:devices='devices')
+  include modal-about.pug
 
+  .container-fluid#modbus-app
+    .navbar.navbar-expand-lg.navbar-light.bg-light
+      .navbar-brand {{settings.config.title}}
+      button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav', aria-controls='navbarNav', aria-expanded='false', aria-label='Toggle navigation')
+        span.navbar-toggler-icon
+      .collapse.navbar-collapse#navbarNav
+        ul.navbar-nav.mr-auto
+          li.nav-item
+            a.nav-link(href='#', v-on:click='view = 0') Registers
+          li.nav-item
+            a.nav-link(href='#', v-on:click='view = 1') Devices
+          li.nav-item
+            a.nav-link(href='#', data-toggle='modal', data-target='#aboutModal')
+              | About
+
+
+    div(v-if='view === 0')
+      modbus-devices(v-bind:devices='devices')
+    div(v-if='view === 1')
 
   script(src='/js/modbus-client.js')
 

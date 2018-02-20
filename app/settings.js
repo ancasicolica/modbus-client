@@ -24,6 +24,7 @@ let settings = {
   config : require(configFile)
 };
 
+settings.config.title = settings.config.title || 'Modbus Client';
 
 // Add ids to the configuration
 let i = 1;

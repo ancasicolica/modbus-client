@@ -16,7 +16,7 @@ Vue.component('modbus-device', {
 });
 
 Vue.component('modbus-devices', {
-  props: ['devices'],
+  props   : ['devices'],
   template: '<div><modbus-device v-for="device in devices" v-bind:device="device"></modbus-device></div>'
 });
 
@@ -24,7 +24,8 @@ var modbusApp = new Vue({
   el     : '#modbus-app',
   data   : {
     settings: settings,
-    devices : []
+    devices : [],
+    view    : 0
   },
   // App is created, fill in the settings
   created: function () {
