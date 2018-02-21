@@ -71,6 +71,7 @@ function ModbusElement(client, element) {
     case 'coil':
 
     function readCoil(callback) {
+      logger.debug('readCoil ' + self.address);
       self.client.readCoils(self.address, 1, function (err, data) {
         if (err) {
           logger.error(err);
@@ -96,6 +97,7 @@ function ModbusElement(client, element) {
     case 'inputRegister':
 
     function readInputRegister(callback) {
+      logger.debug('readInputRegister ' + self.address);
       self.client.readInputRegisters(self.address, self.length, function (err, data) {
         if (err) {
           return callback(err);

@@ -20,7 +20,7 @@ function ModbusDevice(device) {
   this.id       = _.get(device, 'id', 1);
   this.interval = _.get(device, 'interval', 2000);
   this.logger   = require('./logger').getLogger('lib:modbusDevice-' + this.id);
-  this.client = new ModbusRTU();
+  this.client   = new ModbusRTU();
   this.client.setID(this.id);
 
   this.collectors        = [];
@@ -105,6 +105,9 @@ ModbusDevice.prototype.periodicCollection = function () {
     if (self.client.isOpen) {
       _.delay(self.periodicCollection.bind(self), self.interval);
     }
+    else {
+      self.logger.info('NO PERiODIC COLLECTION!');
+    }
   });
 };
 
@@ -112,7 +115,7 @@ ModbusDevice.prototype.periodicCollection = function () {
  * Enabling / disabling collection
  * @param enabled
  */
-ModbusDevice.prototype.enableCollection = function(enabled) {
+ModbusDevice.prototype.enableCollection = function (enabled) {
   if (enabled != this.collectionEnabled) {
     this.logger.info(`Changing auto collection from ${this.collectionEnabled} to ${enabled}`);
   }
