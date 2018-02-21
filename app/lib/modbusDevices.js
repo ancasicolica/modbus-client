@@ -13,15 +13,19 @@ let settings       = undefined;
 function init(_settings, _socket, callback) {
   socket   = _socket;
   settings = _settings;
+
   settings.config.devices.forEach(d => {
     let md = new ModbusDevice(d);
+
     md.on('changed', info => {
-      logger.info(`Changed: ${info.address} ${info.prevValue} -> ${info.value}`);
+      logger.info(`Changed ${md.id}: ${info.address} ${info.prevValue} -> ${info.value}`);
       socket.emit(info);
     });
+
     md.on('connected', (dev) => {
       logger.info(`Device ${dev.id} connected`);
     });
+
     md.on('disconnected', () => {
       logger.info('Device disconnected');
       // Try to connect after a delay
@@ -36,6 +40,12 @@ function init(_settings, _socket, callback) {
         logger.error('Connection error', err);
       }
     });
+
+    // Check every second if there is a socket
+    setInterval(()=>{
+      // md.enableCollection(socket.getNumberOfSockets() > 0);
+    }, 1000);
+
     devices.push(md);
   });
   callback();

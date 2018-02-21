@@ -64,7 +64,7 @@ function ModbusElement(client, element) {
 
   let self = this;
 
-  logger.debug(`Add: a=${this.address} t=${this.type} i=${this.interval}`);
+  logger.debug(`Add: id=${this.id} a=${this.address} t=${this.type} i=${this.interval}`);
 
   switch (this.type) {
     // Coils ----------------------------------------------
@@ -131,7 +131,6 @@ function ModbusElement(client, element) {
 
             case 'float':
               // float: MSB first, print value in dec
-              logger.info('FLOAT ' + self.address, data.buffer);
               self.value = data.buffer.readFloatBE(0).toString();
               break;
 
@@ -160,7 +159,6 @@ function ModbusElement(client, element) {
             case 'string':
               // Convert the data to a string value
               self.value = String.fromCharCode.apply(null, data.buffer);
-              logger.debug(self.data);
               break;
           }
 

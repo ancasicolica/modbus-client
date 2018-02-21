@@ -7,7 +7,6 @@ const ModbusElement = require('./modbusElement');
 const EventEmitter  = require('events').EventEmitter;
 const util          = require('util');
 const async         = require('async');
-const logger        = require('./logger').getLogger('lib:modbusDevice');
 
 /**
  * Constructor
@@ -18,14 +17,14 @@ function ModbusDevice(device) {
   EventEmitter.call(this);
   this.url      = _.get(device, 'server.url', 'localhost');
   this.port     = _.get(device, 'server.port', 552);
-  this.id       = _.get(device, 'server.id', 1);
+  this.id       = _.get(device, 'id', 1);
   this.interval = _.get(device, 'interval', 2000);
-
+  this.logger   = require('./logger').getLogger('lib:modbusDevice-' + this.id);
   this.client = new ModbusRTU();
   this.client.setID(this.id);
 
-  this.collectors = [];
-
+  this.collectors        = [];
+  this.collectionEnabled = true;
 
   this.elements = [];
   let self      = this;
@@ -52,7 +51,7 @@ ModbusDevice.prototype.connect = function (callback) {
   let self = this;
   self.client.connectTCP(self.url, {port: self.port}, (err) => {
     if (err) {
-      logger.error(err);
+      self.logger.error(err);
       return callback(err);
     }
     self.emit('connected', self);
@@ -85,6 +84,11 @@ ModbusDevice.prototype.collect = function (callback) {
     self.emit('disconnected');
     return callback(new Error('Client is disconnected'));
   }
+
+  if (!self.collectionEnabled) {
+    // If the collection is disabled, just do nothing
+   // return callback();
+  }
   async.waterfall(self.collectors, callback);
 };
 
@@ -96,12 +100,23 @@ ModbusDevice.prototype.periodicCollection = function () {
 
   self.collect(err => {
     if (err) {
-      logger.error('Collection error', err);
+      self.logger.error('Collection error', err);
     }
     if (self.client.isOpen) {
       _.delay(self.periodicCollection.bind(self), self.interval);
     }
   });
+};
+
+/**
+ * Enabling / disabling collection
+ * @param enabled
+ */
+ModbusDevice.prototype.enableCollection = function(enabled) {
+  if (enabled != this.collectionEnabled) {
+    this.logger.info(`Changing auto collection from ${this.collectionEnabled} to ${enabled}`);
+  }
+  this.collectionEnabled = enabled;
 };
 
 /**

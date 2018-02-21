@@ -13,7 +13,7 @@ const compression   = require('compression');
 const moment        = require('moment');
 const app           = express();
 const server        = require('http').Server(app);
-const socket        = require('./lib/modbusSocket')(server);
+const socket        = require('./lib/modbusSocket');
 const modbusDevices = require('./lib/modbusDevices');
 const logger        = require('./lib/logger').getLogger('lib:app');
 // view engine setup
@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', require('./routes/index'));
 console.log(settings);
 
-modbusDevices.init(settings, socket, err => {
+modbusDevices.init(settings, socket.init(server), err => {
   if (err) {
     logger.error(err);
   }
