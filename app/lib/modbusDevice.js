@@ -21,7 +21,6 @@ function ModbusDevice(device) {
   this.interval = _.get(device, 'interval', 2000);
   this.logger   = require('./logger').getLogger('lib:modbusDevice-' + this.id);
   this.client   = new ModbusRTU();
-  this.client.setID(this.id);
 
   this.collectors        = [];
   this.collectionEnabled = false;
