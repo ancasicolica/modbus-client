@@ -27,11 +27,16 @@ let settings = {
 settings.config.title = settings.config.title || 'Modbus Client';
 
 // Add ids to the configuration, set levels
-let i = 1;
+let i = 0;
+let deviceNb = 1;
 settings.config.devices.forEach(d => {
-  d.id = i++;
+
+  d.id = deviceNb * 100;
+  i = 1;
+
   d.elements.forEach(e => {
-    e.id = i++;
+    e.id = deviceNb * 100 + i;
+    i++;
 
     // Check the levels for warnings and errors, add placeholders if needed
     if (e.levels) {
@@ -41,6 +46,7 @@ settings.config.devices.forEach(d => {
       e.levels.errorHigh   = _.get(e, 'levels.errorHigh', Number.MAX_VALUE);
     }
   });
+  deviceNb++;
 });
 
 

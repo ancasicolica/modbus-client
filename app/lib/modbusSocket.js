@@ -30,7 +30,7 @@ function ModbusSocket(server) {
 
     socket.on('disconnect', () => {
       logger.info(`Socket removed: ${socket.id}`);
-      _.pull(self.sockets, socket)
+      _.pull(self.sockets, socket);
     });
   });
 
@@ -49,13 +49,25 @@ ModbusSocket.prototype.emit = function (data) {
   });
 };
 
+/**
+ * Returns the number of connected sockets
+ * @returns {number}
+ */
+ModbusSocket.prototype.getNumberOfSockets = function() {
+  return this.sockets.length;
+};
 
 // Just have one instance of the service
-let modbusSocket = undefined;
+let _modbusSocket = undefined;
 
-module.exports = function (server) {
-  if (!modbusSocket) {
-    modbusSocket = new ModbusSocket(server);
+module.exports = {
+  init: function (server) {
+    if (!_modbusSocket) {
+      _modbusSocket = new ModbusSocket(server);
+    }
+    return _modbusSocket;
+  },
+  get : function () {
+    return _modbusSocket;
   }
-  return modbusSocket;
 };
