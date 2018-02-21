@@ -43,9 +43,9 @@ block content
           .card-header {{device.description}}
           .card-body
             .row(v-for='item in device.elements' v-bind:key='item.id')
-              .col-sm-6.col-md-6.item-description(v-on:click='edit(item)') {{item.description}}
-              .col-sm-2.col-md-2 {{item.address}}
-              .col-sm-4.col-md-4 {{item.value}}
+              .col-sm-6.col-md-6.item-description(v-on:click='edit(item)' v-bind:class="{'error-level':item.isError, 'warning-level':item.isWarning, 'normal-level':(item.isWarning === false && item.isError === false)}") {{item.description}}
+              .col-sm-2.col-md-2(v-bind:class="{'error-level':item.isError, 'warning-level':item.isWarning, 'normal-level':(item.isWarning === false && item.isError === false)}") {{item.address}}
+              .col-sm-4.col-md-4(v-bind:class="{'error-level':item.isError, 'warning-level':item.isWarning, 'normal-level':(item.isWarning === false && item.isError === false)}") {{item.value}}
 
       div(v-if='view === 1')
         // List with the devices and their properties

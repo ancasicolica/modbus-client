@@ -5,3 +5,18 @@
 .item-description {
     cursor: pointer;
 }
+
+.warning-level {
+    background-color: yellow;
+    color: black;
+}
+
+.error-level {
+    background-color: red;
+    color: white;
+}
+
+.normal-level {
+    background-color: green;
+    color: white;
+}

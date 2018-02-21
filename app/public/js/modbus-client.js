@@ -25,14 +25,31 @@ var modbusApp = new Vue({
   methods: {
     /* Updates data of ONE SINGLE element
     */
-    updateData      : function (d) {
+    updateData         : function (d) {
       var self = this;
       console.log('ud', d);
       for (var t = 0; t < this.devices.length; t++) {
         var i = _.findIndex(this.devices[t].elements, {id: d.id});
         if (i >= 0) {
-          console.log('item', this.devices[t].elements[i]);
+          var element = this.devices[t].elements[i];
+
+          if (element.levels) {
+            // Check critical levels
+            if (d.value <= element.levels.errorLow || d.value >= element.levels.errorHigh) {
+              d.isError   = true;
+              d.isWarning = false;
+            }
+            else if (d.value <= element.levels.warningLow || d.value >= element.levels.warningHigh) {
+              d.isWarning = true;
+              d.isError   = false;
+            }
+            else {
+              d.isWarning = false;
+              d.isError   = false;
+            }
+          }
           this.$set(this.devices[t].elements, i, _.assign({}, this.devices[t].elements[i], d)); // otherwise it won't update in the component
+          console.log('item', this.devices[t].elements[i]);
         }
         else {
           console.warn('Element not found', d);
@@ -44,14 +61,13 @@ var modbusApp = new Vue({
       }
     },
     /* Initializes all data, get complete dataset*/
-    initData        : function (data) {
+    initData           : function (data) {
       var self = this;
-      console.warn(data);
       data.devices.forEach(function (device) {
         device.elements.forEach(self.updateData)
       });
     },
-    edit            : function (item) {
+    edit               : function (item) {
       var self         = this;
       self.view        = 2;
       self.currentItem = item

@@ -13,13 +13,19 @@
         {
           "description": "Port 1",
           "type": "coil",
-          "address": 0
+          "address": 0,
+          "levels": {
+            "errorLow": 0
+          }
         },
         {
           "description": "Port 2",
           "type": "coil",
           "address": 1,
-          "readonly": false
+          "readonly": false,
+          "levels": {
+            "warningHigh": 1
+          }
         },
         {
           "description": "Port 3",
@@ -50,13 +56,25 @@
           "description": "Voltage",
           "type": "inputRegister",
           "parser": "float",
-          "address": 1
+          "address": 1,
+          "levels": {
+            "errorLow": 11,
+            "warningLow": 11.9,
+            "warningHigh": 13.0,
+            "errorHigh": 14
+          }
         },
         {
           "description": "Temperature",
           "type": "inputRegister",
           "parser": "float",
-          "address": 5
+          "address": 5,
+          "levels": {
+            "errorLow": 0,
+            "warningLow": 12.0,
+            "warningHigh": 30,
+            "errorHigh": 40
+          }
         },
         {
           "description": "Counter",
