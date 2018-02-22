@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "modbus-client",
+      "script": "./server.js",
+      "args": "--config kc_all.json"
+    }
+  ]
+}

@@ -20,6 +20,16 @@ The configuration with all devices is found in a json file. See the config folde
 
 You find all options for this file in the [configuration](./docs/configuration.md) manual.
 
+## Start from command line
+
+Create your settings file as described [here](./docs/configuration.md), then pass it as parameter to the app:
+
+    node server.js --config settings.json 
+
+
+## Start as service
+
+I recommend [PM2](http://pm2.keymetrics.io/) when modbus-client should be run as service. Use [modbus-client-pm2.json](./modbus-client-pm2.json) as template for your configuration.
 
 ## Licence
 
