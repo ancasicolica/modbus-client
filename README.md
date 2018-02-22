@@ -9,7 +9,8 @@ The tool is written in JavaScript using node.js, the client uses vue.js.
 The tool is currently under development, I'll add the features I need for myself. Feel free to ask for (or even better add) features you need.
 
 ## Installation
-Todo
+
+See the [installation](./docs/installation.md) page for more details.
 
 ## Configuration & Options
 
