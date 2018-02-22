@@ -8,8 +8,7 @@
       "description": "Campbell CR1000",
       "server": {
         "url": "192.168.1.18",
-        "port": 1502,
-        "id": 1
+        "port": 1502
       },
       "interval": 2000,
       "elements": [
