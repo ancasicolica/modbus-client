@@ -55,6 +55,9 @@ The devices object has the following properties:
 
 MIT
 
+[License](./LICENSE)
+[Page 2](./page2.md)
+
 ## Contact
 Christian Kuster, CH-8342 Wernetshausen
 [www.ancasicolica.ch](http://www.ancasicolica.ch)
