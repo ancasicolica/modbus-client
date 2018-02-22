@@ -40,10 +40,10 @@ settings.config.devices.forEach(d => {
 
     // Check the levels for warnings and errors, add placeholders if needed
     if (e.levels) {
-      e.levels.errorLow    = _.get(e, 'levels.errorLow', Number.MAX_VALUE * (-1));
+      e.levels.alarmLow    = _.get(e, 'levels.alarmLow', Number.MAX_VALUE * (-1));
       e.levels.warningLow  = _.get(e, 'levels.warningLow', Number.MAX_VALUE * (-1));
       e.levels.warningHigh = _.get(e, 'levels.warningHigh', Number.MAX_VALUE);
-      e.levels.errorHigh   = _.get(e, 'levels.errorHigh', Number.MAX_VALUE);
+      e.levels.alarmHigh   = _.get(e, 'levels.alarmHigh', Number.MAX_VALUE);
     }
   });
   deviceNb++;

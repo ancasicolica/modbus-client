@@ -35,17 +35,17 @@ var modbusApp = new Vue({
 
           if (element.levels) {
             // Check critical levels
-            if (d.value <= element.levels.errorLow || d.value >= element.levels.errorHigh) {
-              d.isError   = true;
+            if (d.value <= element.levels.alarmLow || d.value >= element.levels.alarmHigh) {
+              d.isAlarm   = true;
               d.isWarning = false;
             }
             else if (d.value <= element.levels.warningLow || d.value >= element.levels.warningHigh) {
               d.isWarning = true;
-              d.isError   = false;
+              d.isAlarm   = false;
             }
             else {
               d.isWarning = false;
-              d.isError   = false;
+              d.isAlarm   = false;
             }
           }
           this.$set(this.devices[t].elements, i, _.assign({}, this.devices[t].elements[i], d)); // otherwise it won't update in the component
@@ -57,7 +57,7 @@ var modbusApp = new Vue({
       }
       // Check also current element
       if (self.currentItem && self.currentItem.id === d.id) {
-        self.currentItem = d;
+        self.currentItem = _.assign({}, self.currentItem, d);
       }
     },
     /* Initializes all data, get complete dataset*/
@@ -70,9 +70,22 @@ var modbusApp = new Vue({
     edit               : function (item) {
       var self         = this;
       self.view        = 2;
-      self.currentItem = item
+      self.currentItem = item;
       console.log('EDIT', item)
     },
+    hasAlarmLevels : function(item) {
+      if (!item.levels) {
+        return false;
+      }
+      return (item.levels.alarmLow > (Number.MAX_VALUE * (-1)) || item.levels.alarmHigh < Number.MAX_VALUE);
+    },
+    hasWarningLevels : function(item) {
+      if (!item.levels) {
+        return false;
+      }
+      return (item.levels.warningLow > (Number.MAX_VALUE * (-1)) || item.levels.warningHigh < Number.MAX_VALUE);
+    },
+    
     getDeviceForElement: function (element) {
       for (var t = 0; t < this.devices.length; t++) {
         var i = _.findIndex(this.devices[t].elements, {id: element.id});

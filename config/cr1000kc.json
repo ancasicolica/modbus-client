@@ -52,10 +52,10 @@
           "parser": "float",
           "address": 1,
           "levels": {
-            "errorLow": 10,
+            "alarmLow": 10,
             "warningLow": 12.0,
             "warningHigh": 12.2,
-            "errorHigh": 13
+            "alarmHigh": 13
           }
         },
         {
@@ -64,10 +64,10 @@
           "parser": "float",
           "address": 5,
           "levels": {
-            "errorLow": 0,
+            "alarmLow": 0,
             "warningLow": 12.0,
             "warningHigh": 30,
-            "errorHigh": 40
+            "alarmHigh": 40
           }
         },
         {

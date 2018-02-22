@@ -15,7 +15,7 @@
           "type": "coil",
           "address": 0,
           "levels": {
-            "errorLow": 0
+            "alarmLow": 0
           }
         },
         {
@@ -58,10 +58,10 @@
           "parser": "float",
           "address": 1,
           "levels": {
-            "errorLow": 11,
+            "alarmLow": 11,
             "warningLow": 11.9,
             "warningHigh": 13.0,
-            "errorHigh": 14
+            "alarmHigh": 14
           }
         },
         {
@@ -70,10 +70,10 @@
           "parser": "float",
           "address": 5,
           "levels": {
-            "errorLow": 0,
+            "alarmLow": 0,
             "warningLow": 12.0,
             "warningHigh": 30,
-            "errorHigh": 40
+            "alarmHigh": 40
           }
         },
         {

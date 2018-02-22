@@ -74,7 +74,7 @@ function ModbusElement(client, element) {
       logger.debug('readCoil ' + self.address);
       self.client.readCoils(self.address, 1, function (err, data) {
         if (err) {
-          logger.error(err);
+          logger.error(`Error while reading Coil with address ${self.address}`, err);
         }
         else {
           // logger.debug(`rc: ${self.address} ${data.value}`);
