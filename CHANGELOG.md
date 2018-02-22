@@ -1,7 +1,7 @@
 #Release Notes modbus-client
 
-currently under development, no labeled version yet.
-
+V0.9.0, 22.02.2018: Beta Release
+ * First release with basic functionality
  * Supported registers:
    * coil
    * input registers
