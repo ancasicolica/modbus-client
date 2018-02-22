@@ -14,14 +14,14 @@ const argv     = require('minimist')(process.argv.slice(2));
 const _        = require('lodash');
 let configFile = path.join(__dirname, '..', 'config', argv.config || 'default.json');
 
-
+let config = require(configFile)
 let settings = {
   name   : pkg.name,
   appName: pkg.title,
   version: pkg.version,
   debug  : (process.env.NODE_ENV !== 'production' || process.env.DEBUG) ? true : false,
-  port   : 8080,
-  config : require(configFile)
+  port   : _.get(config, 'server.port', 8080),
+  config : config
 };
 
 settings.config.title = settings.config.title || 'Modbus Client';

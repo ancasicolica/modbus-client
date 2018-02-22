@@ -1,4 +1,7 @@
 {
+  "server": {
+    "port": 8080
+  },
   "title": "Campbell CR1000 Demo",
   "devices": [
     {
