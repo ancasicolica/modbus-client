@@ -52,11 +52,12 @@ function ModbusElement(client, element) {
   this.type        = _.get(element, 'type', 'coil');
   this.address     = _.get(element, 'address', 552);
   this.channel     = _.get(element, 'channel', 1);
-  this.readonly    = _.get(element, 'readonly', true);
+  this.readonly    = _.get(element, 'readOnly', true);
   this.interval    = _.get(element, 'interval', _.get(client, 'inverval', 5000));
   this.parser      = _.get(element, 'parser', 'byte');
   this.length      = _.get(element, 'length', getLength(this.parser));
   this.id          = _.get(element, 'id', -1);
+  this.deviceId    = _.get(element, 'deviceId', -1);
   this.value       = undefined; // This is the value of the element
   this.prevValue   = undefined; // Helps detecting changes
   this.collector   = undefined;
@@ -71,7 +72,7 @@ function ModbusElement(client, element) {
     case 'coil':
 
     function readCoil(callback) {
-      logger.debug('readCoil ' + self.address);
+      //logger.debug('readCoil ' + self.address);
       self.client.readCoils(self.address, 1, function (err, data) {
         if (err) {
           logger.error(`Error while reading Coil with address ${self.address}`, err);
@@ -97,7 +98,7 @@ function ModbusElement(client, element) {
     case 'inputRegister':
 
     function readInputRegister(callback) {
-      logger.debug('readInputRegister ' + self.address);
+      //logger.debug('readInputRegister ' + self.address);
       self.client.readInputRegisters(self.address, self.length, function (err, data) {
         if (err) {
           return callback(err);
@@ -193,6 +194,11 @@ ModbusElement.prototype.collect = function (callback) {
   callback(null);
 };
 
+ModbusElement.prototype.save = function (value, callback) {
+  logger.info('SAVED', value);
+  callback();
+};
+
 /**
  * Set the value of an element
  * @param value
@@ -203,15 +209,18 @@ ModbusElement.prototype.setValue = function (value, callback) {
   let self = this;
 
   if (self.readonly) {
+    logger.info(`Coil with address ${self.address} is read only!`);
     return callback(new Error('Read only value'));
   }
   switch (self.type) {
     case 'coil':
       self.client.writeCoil(self.address, value)
         .then(function (d) {
+          logger.info(`Coil with address ${self.address} set to ${value}`);
           callback();
         })
         .catch(function (e) {
+          logger.error(e);
           callback(e);
         });
       break;
@@ -241,7 +250,8 @@ ModbusElement.prototype.getObject = function () {
     prevValue  : self.prevValue,
     parser     : self.parser,
     length     : self.length,
-    id         : self.id
+    id         : self.id,
+    deviceId   : self.deviceId
   };
 };
 

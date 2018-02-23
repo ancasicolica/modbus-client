@@ -1,0 +1,7 @@
+.card.device(v-for='device in devices' v-bind:device='device')
+  .card-header {{device.description}}
+  .card-body
+    .row(v-for='item in device.elements' v-bind:key='item.id')
+      .col-sm-6.col-md-6.item-description(v-on:click='edit(item)' v-bind:class="{'alarm-level':item.isAlarm, 'warning-level':item.isWarning, 'normal-level':(item.isWarning === false && item.isAlarm === false)}") {{item.description}}
+      .col-sm-2.col-md-2(v-bind:class="{'alarm-level':item.isAlarm, 'warning-level':item.isWarning, 'normal-level':(item.isWarning === false && item.isAlarm === false)}") {{item.address}}
+      .col-sm-4.col-md-4(v-bind:class="{'alarm-level':item.isAlarm, 'warning-level':item.isWarning, 'normal-level':(item.isWarning === false && item.isAlarm === false)}") {{item.value}}

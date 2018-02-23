@@ -11,23 +11,23 @@ const async         = require('async');
 /**
  * Constructor
  * @param device
+ * @param socket
  * @constructor
  */
-function ModbusDevice(device) {
+function ModbusDevice(socket, device) {
   EventEmitter.call(this);
-  this.url      = _.get(device, 'server.url', 'localhost');
-  this.port     = _.get(device, 'server.port', 552);
-  this.id       = _.get(device, 'id', 1);
-  this.interval = _.get(device, 'interval', 2000);
-  this.logger   = require('./logger').getLogger('lib:modbusDevice-' + this.id);
-  this.client   = new ModbusRTU();
-
+  this.url               = _.get(device, 'server.url', 'localhost');
+  this.port              = _.get(device, 'server.port', 552);
+  this.id                = _.get(device, 'id', 1);
+  this.interval          = _.get(device, 'interval', 2000);
+  this.logger            = require('./logger').getLogger('lib:modbusDevice-' + this.id);
+  this.client            = new ModbusRTU();
   this.collectors        = [];
   this.collectionEnabled = false;
+  this.elements          = [];
 
-  this.elements = [];
-  let self      = this;
-  let elements  = _.get(device, 'elements', []);
+  let self     = this;
+  let elements = _.get(device, 'elements', []);
   elements.forEach(e => {
     let me = new ModbusElement(self.client, e);
     if (me) {
@@ -119,6 +119,21 @@ ModbusDevice.prototype.enableCollection = function (enabled) {
     this.logger.info(`Changing auto collection from ${this.collectionEnabled} to ${enabled}`);
   }
   this.collectionEnabled = enabled;
+};
+
+/**
+ * Sets data of an element
+ * @param obj : object, having at least an id and a value
+ * @param callback
+ */
+ModbusDevice.prototype.setData = function(obj, callback) {
+  let self = this;
+
+  let element = _.find(self.elements, {id: obj.id});
+  if (!element) {
+    return callback(new Error(`Element with ID ${obj.id} not found`));
+  }
+  element.setValue(obj.value, callback);
 };
 
 /**

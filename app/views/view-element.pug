@@ -1,0 +1,43 @@
+h2 {{currentItem.description}}
+table.table
+  tbody
+    tr
+      td(v-bind:class="{'alarm-level':currentItem.isAlarm, 'warning-level':currentItem.isWarning, 'normal-level':(currentItem.isWarning === false && currentItem.isAlarm === false)}") Current value
+      td(v-bind:class="{'alarm-level':currentItem.isAlarm, 'warning-level':currentItem.isWarning, 'normal-level':(currentItem.isWarning === false && currentItem.isAlarm === false)}") {{currentItem.value}}
+    tr
+      td Parser
+      td {{currentItem.parser}}
+    tr(v-if='hasWarningLevels(currentItem)')
+      td Warning Levels
+      td
+        div(v-if='currentItem.levels.warningLow > (-1 * Number.MAX_VALUE)') Low: {{currentItem.levels.warningLow}} &nbsp;
+        div(v-if='currentItem.levels.warningHigh < Number.MAX_VALUE') High: {{currentItem.levels.warningHigh}}
+    tr(v-if='hasAlarmLevels(currentItem)')
+      td Alarm Levels
+      td
+        div(v-if='currentItem.levels.alarmLow > (-1 * Number.MAX_VALUE)') Low: {{currentItem.levels.alarmLow}}&nbsp;
+        div(v-if='currentItem.levels.alarmHigh < Number.MAX_VALUE') High: {{currentItem.levels.alarmHigh}}
+    tr
+      td Address
+      td {{currentItem.address}}
+    tr
+      td Length
+      td {{currentItem.length}}
+    tr
+      td Type
+      td {{currentItem.type}}
+    tr
+      td Read Only
+      td {{currentItem.readOnly}}
+    tr
+      td Device
+      td {{getDeviceForElement(currentItem).description}}
+    tr(v-if='!currentItem.readOnly')
+      td Edit value
+      td
+        form.form-inline
+          input.form-control-sm(name="new-value" type="text" v-model="currentItem.newValue")
+          | &nbsp;
+          button.btn.btn-primary.btn-sm(type='button' v-on:click='saveValue()') set
+
+button.btn.btn-primary(type='button' v-on:click='view=0') back

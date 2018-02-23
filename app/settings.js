@@ -31,11 +31,12 @@ let i = 0;
 let deviceNb = 1;
 settings.config.devices.forEach(d => {
 
-  d.id = deviceNb * 100;
+  d.id = 'd_' + deviceNb * 1000;
   i = 1;
 
   d.elements.forEach(e => {
-    e.id = deviceNb * 100 + i;
+    e.deviceId = d.id;
+    e.id = 'e_' + deviceNb * 1000 + i;
     i++;
 
     // Check the levels for warnings and errors, add placeholders if needed

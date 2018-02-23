@@ -22,7 +22,7 @@
           "description": "Port 2",
           "type": "coil",
           "address": 1,
-          "readonly": false,
+          "readOnly": false,
           "levels": {
             "warningHigh": 1
           }
@@ -50,7 +50,8 @@
         {
           "description": "Port 7",
           "type": "coil",
-          "address": 7
+          "address": 7,
+          "readOnly": false
         },
         {
           "description": "Voltage",

@@ -19,13 +19,18 @@ var modbusApp = new Vue({
         e.type = 'init';
       });
     });
+
+    /* Socket.io connection handling */
+    this.socket = io();
+    this.socket.on('data', this.updateData);
+    this.socket.on('init-data', this.initData);
   },
 
 
   methods: {
     /* Updates data of ONE SINGLE element
     */
-    updateData         : function (d) {
+    updateData      : function (d) {
       var self = this;
       console.log('ud', d);
       for (var t = 0; t < this.devices.length; t++) {
@@ -60,32 +65,51 @@ var modbusApp = new Vue({
         self.currentItem = _.assign({}, self.currentItem, d);
       }
     },
-    /* Initializes all data, get complete dataset*/
-    initData           : function (data) {
+    /**
+     *  Initializes all data, get complete dataset
+     */
+    initData        : function (data) {
       var self = this;
       data.devices.forEach(function (device) {
         device.elements.forEach(self.updateData)
       });
     },
-    edit               : function (item) {
+    edit            : function (item) {
       var self         = this;
       self.view        = 2;
       self.currentItem = item;
+      if (typeof(self.currentItem.value) === "boolean") {
+        self.currentItem.newValue = self.currentItem.value ? 1 : 0;
+      }
+      else {
+        self.currentItem.newValue = self.currentItem.value;
+      }
       console.log('EDIT', item)
     },
-    hasAlarmLevels : function(item) {
+    /**
+     * Saves the value of the currentItem
+     */
+    saveValue       : function () {
+
+      $.post('/edit/' + this.currentItem.deviceId + '/' +this.currentItem.id, this.currentItem, function (data) {
+        console.log('SAVED', this.currentItem, data);
+      }, 'json');
+
+
+    },
+    hasAlarmLevels  : function (item) {
       if (!item.levels) {
         return false;
       }
       return (item.levels.alarmLow > (Number.MAX_VALUE * (-1)) || item.levels.alarmHigh < Number.MAX_VALUE);
     },
-    hasWarningLevels : function(item) {
+    hasWarningLevels: function (item) {
       if (!item.levels) {
         return false;
       }
       return (item.levels.warningLow > (Number.MAX_VALUE * (-1)) || item.levels.warningHigh < Number.MAX_VALUE);
     },
-    
+
     getDeviceForElement: function (element) {
       for (var t = 0; t < this.devices.length; t++) {
         var i = _.findIndex(this.devices[t].elements, {id: element.id});
@@ -98,9 +122,3 @@ var modbusApp = new Vue({
   }
 });
 
-/*
-  Socket.io connection handling
- */
-var socket = io();
-socket.on('data', modbusApp.updateData);
-socket.on('init-data', modbusApp.initData);

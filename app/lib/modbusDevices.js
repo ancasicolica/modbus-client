@@ -10,12 +10,18 @@ let devices        = [];
 let socket         = undefined;
 let settings       = undefined;
 
+/**
+ * Initializes the devices module
+ * @param _settings
+ * @param _socket
+ * @param callback
+ */
 function init(_settings, _socket, callback) {
   socket   = _socket;
   settings = _settings;
 
   settings.config.devices.forEach(d => {
-    let md = new ModbusDevice(d);
+    let md = new ModbusDevice(socket, d);
 
     md.on('changed', info => {
       logger.info(`Changed ${md.id}: ${info.address} ${info.prevValue} -> ${info.value}`);
@@ -42,7 +48,7 @@ function init(_settings, _socket, callback) {
     });
 
     // Check every second if there is a socket
-    setInterval(()=>{
+    setInterval(() => {
       md.enableCollection(socket.getNumberOfSockets() > 0);
     }, 1000);
 
@@ -51,6 +57,10 @@ function init(_settings, _socket, callback) {
   callback();
 }
 
+/**
+ * Returns all devices with their elements
+ * @returns {{devices: Array}}
+ */
 function getAllData() {
   let retVal = {
     devices: []
@@ -63,7 +73,24 @@ function getAllData() {
   return retVal;
 }
 
+/**
+ * Edits a device: sets a new value for an element
+ * @param deviceId
+ * @param elementId
+ * @param obj
+ * @param callback
+ */
+function edit(deviceId, elementId, obj, callback) {
+  console.log(deviceId, elementId, obj);
+  let device = _.find(devices, {id: deviceId});
+  if (!device) {
+    return callback(new Error('Device not found'));
+  }
+  device.setData({id: elementId, value:obj.newValue}, callback);
+}
+
 module.exports = {
   init      : init,
-  getAllData: getAllData
+  getAllData: getAllData,
+  edit      : edit
 };

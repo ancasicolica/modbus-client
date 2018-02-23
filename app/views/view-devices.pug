@@ -1,0 +1,17 @@
+h1 Device Info
+div(v-for='device in devices' v-bind:key='device.id')
+  h3 {{device.description}}
+  table.table
+    tbody
+      tr
+        td URL
+        td {{device.server.url}}
+      tr
+        td Port
+        td {{device.server.port}}
+      tr
+        td Collection Interval [ms]
+        td {{device.interval}}
+      tr
+        td Elements
+        td {{device.elements.length}}

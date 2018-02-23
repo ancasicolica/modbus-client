@@ -18,7 +18,6 @@ const modbusDevices = require('./modbusDevices');
 function ModbusSocket(server) {
   EventEmitter.call(this);
   this.sockets = [];
-
   io = require('socket.io')(server);
 
   let self = this;
@@ -33,7 +32,6 @@ function ModbusSocket(server) {
       _.pull(self.sockets, socket);
     });
   });
-
 }
 
 util.inherits(ModbusSocket, EventEmitter);
