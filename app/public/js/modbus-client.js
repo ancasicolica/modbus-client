@@ -84,16 +84,24 @@ var modbusApp = new Vue({
       else {
         self.currentItem.newValue = self.currentItem.value;
       }
+      self.currentItem.resultErrorMessage = undefined;
+      self.currentItem.resultOkMessage    = undefined;
       console.log('EDIT', item)
     },
     /**
      * Saves the value of the currentItem
      */
     saveValue       : function () {
-
-      $.post('/edit/' + this.currentItem.deviceId + '/' +this.currentItem.id, this.currentItem, function (data) {
-        console.log('SAVED', this.currentItem, data);
-      }, 'json');
+      var self = this;
+      $.post('/edit/' + this.currentItem.deviceId + '/' + this.currentItem.id, this.currentItem, function (data) {
+        console.log('SAVED', self.currentItem, data);
+      }, 'json').done(function (d) {
+        console.log('SAVED 2', self.currentItem, d);
+        self.currentItem.resultOkMessage = 'Value set from ' + d.info.old + ' to ' + d.info.current;
+      }).fail(function (e, f) {
+        self.currentItem.resultErrorMessage = 'Error: ' + e.message;
+        console.error('Error', e, f)
+      });
 
 
     },

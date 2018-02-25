@@ -39,5 +39,7 @@ table.table
           input.form-control-sm(name="new-value" type="text" v-model="currentItem.newValue")
           | &nbsp;
           button.btn.btn-primary.btn-sm(type='button' v-on:click='saveValue()') set
+        .alert.alert-success(v-if='currentItem.resultOkMessage') {{currentItem.resultOkMessage}}
+        .alert.alert-danger(v-if='currentItem.resultErrorMessage') {{currentItem.resultErrorMessage}}
 
 button.btn.btn-primary(type='button' v-on:click='view=0') back

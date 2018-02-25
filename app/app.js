@@ -34,8 +34,11 @@ app.use('/', require('./routes/index'));
 console.log(settings);
 
 router.post('/:deviceId/:elementId', function (req, res) {
-  modbusDevices.edit(req.params.deviceId, req.params.elementId, req.body, err => {
-    res.status(200).send('ok');
+  modbusDevices.edit(req.params.deviceId, req.params.elementId, req.body, (err, info) => {
+    if (err) {
+      return res.status(500).send({err: err.message});
+    }
+    res.status(200).send({info});
   });
 });
 

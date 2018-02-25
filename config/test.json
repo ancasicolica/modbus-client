@@ -1,0 +1,39 @@
+{
+  "devices": [
+    {
+      "server": {
+        "url": "213.200.235.234",
+        "port": 502,
+        "id": 1
+      },
+      "elements": [
+        {
+          "description": "Heartbeat",
+          "type": "inputRegister",
+          "parser": "uint16",
+          "address": 0
+        },{
+          "description": "R2",
+          "type": "inputRegister",
+          "parser": "uint16",
+          "address": 1
+        },{
+          "description": "R3",
+          "type": "inputRegister",
+          "parser": "uint16",
+          "address": 2
+        },{
+          "description": "R4",
+          "type": "inputRegister",
+          "parser": "uint16",
+          "address": 3
+        },{
+          "description": "R5",
+          "type": "inputRegister",
+          "parser": "uint16",
+          "address": 4
+        }
+      ]
+    }
+  ]
+}

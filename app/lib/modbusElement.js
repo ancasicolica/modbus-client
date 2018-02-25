@@ -214,10 +214,24 @@ ModbusElement.prototype.setValue = function (value, callback) {
   }
   switch (self.type) {
     case 'coil':
+      value = parseInt(value) !== 0;
+      let oldValue = self.value;
       self.client.writeCoil(self.address, value)
         .then(function (d) {
-          logger.info(`Coil with address ${self.address} set to ${value}`);
-          callback();
+          logger.info(`Coil with address ${self.address} set to ${value}`, d);
+          self.collect(err => {
+            if (err) {
+              return callback(err);
+            }
+            if (self.value && value || !self.value && !value) {
+              logger.info('Data successful set to ' + value);
+              return callback(null, {old: oldValue, current: value});
+            }
+            else {
+              logger.info('Data NOT set to ' + value);
+              return callback(new Error('Value not set'));
+            }
+          });
         })
         .catch(function (e) {
           logger.error(e);
