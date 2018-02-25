@@ -87,9 +87,9 @@
         },
         {
           "description": "Dummy Register",
-          "type": "inputRegister",
-          "parser": "float",
-          "address": 3,
+          "type": "holdingRegister",
+          "parser": "uint16",
+          "address": 4,
           "readOnly": false
         }
       ]

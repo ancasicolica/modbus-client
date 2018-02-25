@@ -99,7 +99,7 @@ var modbusApp = new Vue({
         console.log('SAVED 2', self.currentItem, d);
         self.currentItem.resultOkMessage = 'Value set from ' + d.info.old + ' to ' + d.info.current;
       }).fail(function (e, f) {
-        self.currentItem.resultErrorMessage = 'Error: ' + e.message;
+        self.currentItem.resultErrorMessage = 'Error: ' + e.responseJSON.err;
         console.error('Error', e, f)
       });
 

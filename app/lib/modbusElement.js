@@ -97,90 +97,116 @@ function ModbusElement(client, element) {
     // INPUT REGISTER  ------------------------------------
     case 'inputRegister':
 
-    function readInputRegister(callback) {
-      //logger.debug('readInputRegister ' + self.address);
-      self.client.readInputRegisters(self.address, self.length, function (err, data) {
-        if (err) {
-          return callback(err);
-        }
-        else {
-          // logger.debug(`rc: ${self.address} ${data.value}`);
-          switch (self.parser) {
-            case 'uint8':
-            case 'byte':
-              // byte: just one byte value, print value in dec
-              self.value = _.get(data, 'data[0]', 0);
-              break;
-
-            case 'int16':
-              // uint16: MSB first, print value in dec
-              self.value = data.buffer.readInt16BE(0).toString();
-              break;
-
-            case 'uint16':
-              // uint16: MSB first, print value in dec
-              self.value = data.buffer.readUInt16BE(0).toString();
-              break;
-
-            case 'int32':
-              // word: MSB first, print value in dec
-              self.value = data.buffer.readInt32BE(0).toString();
-              break;
-
-            case 'uint32':
-              // word: MSB first, print value in dec
-              self.value = data.buffer.readUInt32BE(0).toString();
-              break;
-
-            case 'float':
-              // float: MSB first, print value in dec
-              self.value = data.buffer.readFloatBE(0).toString();
-              break;
-
-            case 'hex-string':
-              // Every byte is written as hex value, sometimes used for firmware versions
-              self.value = '';
-              data.buffer.forEach(function (b) {
-                self.value += b.toString(16) + ' ';
-              });
-              break;
-
-            case 'ip-address':
-              // Parse as IP address (ok, it's foolish as this address is also in the config! But just make it complete)
-              self.value = `${data.buffer[0]}.${data.buffer[1]}.${data.buffer[2]}.${data.buffer[3]}`;
-              break;
-
-            case 'mac-address':
-              // MAC Address
-              self.value = '';
-              data.buffer.forEach(function (b) {
-                self.value += b.toString(16) + ':';
-              });
-              self.value = _.trim(self.value, ':');
-              break;
-
-            case 'string':
-              // Convert the data to a string value
-              self.value = String.fromCharCode.apply(null, data.buffer);
-              break;
-          }
-
-          // In case of a changed value: emit new data
-          if (self.value !== self.prevValue) {
-            self.emit('changed', self.getObject());
-            self.prevValue = self.value;
-          }
-        }
-        callback(err);
-      });
-    }
-
-      this.collector = readInputRegister;
+      this.collector = function (callback) {
+        self.client.readInputRegisters(self.address, self.length, function (err, data) {
+          self.handleReadRegister(err, data, callback);
+        })
+      };
       break;
+
+    // HOLDING REGISTER  ----------------------------------
+    case 'holdingRegister':
+
+      this.collector = function (callback) {
+        self.client.readHoldingRegisters(self.address, self.length, function (err, data) {
+          self.handleReadRegister(err, data, callback);
+        });
+      };
+      break;
+
+    default:
+      throw new Error('Undefined register type: ' + self.type);
   }
 }
 
 util.inherits(ModbusElement, EventEmitter);
+
+/**
+ * Parse a buffer according to the configuration
+ * @param buffer
+ * @returns {*}
+ */
+ModbusElement.prototype.parse = function (buffer) {
+  let self = this;
+  switch (self.parser) {
+    case 'uint8':
+    case 'byte':
+      // byte: just one byte value, print value in dec
+      return buffer[0];
+
+    case 'int16':
+      // uint16: MSB first, print value in dec
+      return buffer.readInt16BE(0);
+
+    case 'uint16':
+      // uint16: MSB first, print value in dec
+      return buffer.readUInt16BE(0);
+
+    case 'int32':
+      // word: MSB first, print value in dec
+      return buffer.readInt32BE(0);
+
+    case 'uint32':
+      // word: MSB first, print value in dec
+      return buffer.readUInt32BE(0);
+
+    case 'float':
+      // float: MSB first, print value in dec
+      return buffer.readFloatBE(0);
+
+    case 'hex-string':
+      // Every byte is written as hex value, sometimes used for firmware versions
+      let hexStr = '';
+      buffer.forEach(function (b) {
+        hexStr += b.toString(16) + ' ';
+      });
+      return hexStr;
+
+    case 'ip-address':
+      // Parse as IP address (ok, it's foolish as this address is also in the config! But just make it complete)
+      return `${buffer[0]}.${buffer[1]}.${buffer[2]}.${buffer[3]}`;
+
+    case 'mac-address':
+      // MAC Address
+      let macAddress = '';
+      buffer.forEach(function (b) {
+        macAddress += b.toString(16) + ':';
+      });
+      return _.trim(macAddress, ':');
+
+    case 'string':
+      // Convert the data to a string value
+      return String.fromCharCode.apply(null, buffer);
+
+    default:
+      throw new Error('Invalid parser: ' + self.parser);
+  }
+};
+
+/**
+ * Handle a register read access (holding or input register)
+ * @param err
+ * @param data
+ * @param callback
+ * @returns {*}
+ */
+ModbusElement.prototype.handleReadRegister = function (err, data, callback) {
+  let self = this;
+  if (err) {
+    return callback(err);
+  }
+  else {
+    // logger.debug(`rc: ${self.address} ${data.value}`);
+    self.value = self.parse(data.buffer);
+
+    // In case of a changed value: emit new data
+    if (self.value !== self.prevValue) {
+      self.emit('changed', self.getObject());
+      self.prevValue = self.value;
+    }
+  }
+  callback(err);
+};
 
 /**
  * Collects the data
@@ -206,7 +232,8 @@ ModbusElement.prototype.save = function (value, callback) {
  * @returns {*}
  */
 ModbusElement.prototype.setValue = function (value, callback) {
-  let self = this;
+  let self     = this;
+  let oldvalue = -1;
 
   if (self.readonly) {
     logger.info(`Coil with address ${self.address} is read only!`);
@@ -214,8 +241,8 @@ ModbusElement.prototype.setValue = function (value, callback) {
   }
   switch (self.type) {
     case 'coil':
-      value = parseInt(value) !== 0;
-      let oldValue = self.value;
+      value    = parseInt(value) !== 0;
+      oldValue = self.value;
       self.client.writeCoil(self.address, value)
         .then(function (d) {
           logger.info(`Coil with address ${self.address} set to ${value}`, d);
@@ -235,9 +262,41 @@ ModbusElement.prototype.setValue = function (value, callback) {
         })
         .catch(function (e) {
           logger.error(e);
-          callback(e);
+          return callback(e);
         });
       break;
+
+    case 'inputRegister':
+      return callback(new Error('Writing holding registers is not supported'));
+
+    case 'holdingRegister':
+      value    = parseInt(value);
+      oldValue = self.value;
+      self.client.writeRegisters(self.address, [value])
+        .then(function (d) {
+          logger.info(`Holding Register with address ${self.address} set to ${value}`, d);
+          self.collect(err => {
+            if (err) {
+              return callback(err);
+            }
+            if (self.value === value) {
+              logger.info('Data successful set to ' + value);
+              return callback(null, {old: oldValue, current: value});
+            }
+            else {
+              logger.info('Data NOT set to ' + value + ', is still ' + self.value);
+              return callback(new Error('Value not set'));
+            }
+          });
+        })
+        .catch(function (e) {
+          logger.error(e);
+          return callback(e);
+        });
+      break;
+
+    default:
+      return callback(new Error('Not supported type: ' + self.type));
   }
 };
 
