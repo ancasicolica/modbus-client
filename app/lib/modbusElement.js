@@ -220,10 +220,6 @@ ModbusElement.prototype.collect = function (callback) {
   callback(null);
 };
 
-ModbusElement.prototype.save = function (value, callback) {
-  logger.info('SAVED', value);
-  callback();
-};
 
 /**
  * Set the value of an element
@@ -270,9 +266,24 @@ ModbusElement.prototype.setValue = function (value, callback) {
       return callback(new Error('Writing holding registers is not supported'));
 
     case 'holdingRegister':
-      value    = parseInt(value);
+      let buffer;
+      switch (self.parser) {
+        case 'float':
+          // Todo: this must be set into 2 Words, not 4 bytes!
+          buffer = Buffer.alloc(4);
+          buffer.writeFloatBE(parseFloat(value));
+          break;
+
+        default:
+          // Todo: add all datatypes
+          buffer    = Buffer.alloc(1);
+          buffer[0] = parseInt(value);
+          value     = parseInt(value);
+          break;
+      }
+
       oldValue = self.value;
-      self.client.writeRegisters(self.address, [value])
+      self.client.writeRegisters(self.address, buffer)
         .then(function (d) {
           logger.info(`Holding Register with address ${self.address} set to ${value}`, d);
           self.collect(err => {

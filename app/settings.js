@@ -14,7 +14,7 @@ const argv     = require('minimist')(process.argv.slice(2));
 const _        = require('lodash');
 let configFile = path.join(__dirname, '..', 'config', argv.config || 'default.json');
 
-let config = require(configFile)
+let config   = require(configFile)
 let settings = {
   name   : pkg.name,
   appName: pkg.title,
@@ -27,16 +27,17 @@ let settings = {
 settings.config.title = settings.config.title || 'Modbus Client';
 
 // Add ids to the configuration, set levels
-let i = 0;
+let i        = 0;
 let deviceNb = 1;
 settings.config.devices.forEach(d => {
 
-  d.id = 'd_' + deviceNb * 1000;
-  i = 1;
+  d.id       = 'd_' + deviceNb * 1000;
+  d.interval = _.get(d, 'inverval', 2000);
+  i          = 1;
 
   d.elements.forEach(e => {
     e.deviceId = d.id;
-    e.id = 'e_' + deviceNb * 1000 + i;
+    e.id       = 'e_' + deviceNb * 1000 + i;
     i++;
 
     // Check the levels for warnings and errors, add placeholders if needed
