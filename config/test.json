@@ -1,6 +1,8 @@
 {
+  "title": "TBA Test",
   "devices": [
     {
+      "description" :"TBA Testserver",
       "server": {
         "url": "213.200.235.234",
         "port": 502,
@@ -32,6 +34,31 @@
           "type": "inputRegister",
           "parser": "uint16",
           "address": 4
+        },
+        {
+          "description": "Hold 1",
+          "type": "holdingRegister",
+          "parser": "uint16",
+          "address": 0,
+          "readOnly": false
+        },{
+          "description": "Hold 2",
+          "type": "holdingRegister",
+          "parser": "uint16",
+          "address": 1,
+          "readOnly": false
+        },{
+          "description": "Hold 3",
+          "type": "holdingRegister",
+          "parser": "uint16",
+          "address": 2,
+          "readOnly": false
+        },{
+          "description": "Hold 4",
+          "type": "holdingRegister",
+          "parser": "uint16",
+          "address": 3,
+          "readOnly": false
         }
       ]
     }

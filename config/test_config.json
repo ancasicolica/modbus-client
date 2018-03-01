@@ -1,0 +1,57 @@
+{
+  "title": "Modbus Test Configuration",
+  "devices": [
+    {
+      "description": "Device #1",
+      "server": {
+        "url": "localhost",
+        "port": 8502,
+        "id": 1
+      },
+      "interval": 2000,
+      "elements": [
+        {
+          "description": "Model-Name",
+          "type": "inputRegister",
+          "parser": "string",
+          "length": 10,
+          "address": 5000
+        },
+        {
+          "description": "Device-Name",
+          "type": "inputRegister",
+          "parser": "string",
+          "length": 30,
+          "address": 5040
+        },
+        {
+          "description": "Firmware-Version",
+          "type": "inputRegister",
+          "parser": "hex-string",
+          "length": 2,
+          "address": 5029
+        },
+        {
+          "description": "IP-Address",
+          "type": "inputRegister",
+          "parser": "ip-address",
+          "length": 2,
+          "address": 5027
+        },
+        {
+          "description": "MAC-Address",
+          "type": "inputRegister",
+          "parser": "mac-address",
+          "length": 3,
+          "address": 5024
+        },
+        {
+          "description": "Device Up Time",
+          "type": "inputRegister",
+          "parser": "uint32",
+          "address": 5020
+        }
+      ]
+    }
+  ]
+}

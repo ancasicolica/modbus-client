@@ -49,7 +49,7 @@ modbusDevices.init(settings, socket.init(server), err => {
 
   app.use('/edit', router);
 
-  server.listen(settings.port, 'localhost', () => {
+  server.listen(settings.port, '0.0.0.0', () => {
     logger.info(`Server started on Port ${settings.port}`)
   });
 });

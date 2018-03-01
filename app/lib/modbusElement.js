@@ -26,6 +26,8 @@ function getLength(parser) {
     case 'int32':
     case 'uint32':
     case 'float':
+    case 'uint32_MLE':
+    case 'int32_MLE':
       return 2;
 
     case 'ip-address':
@@ -65,51 +67,55 @@ function ModbusElement(client, element) {
 
   let self = this;
 
-  logger.debug(`Add: id=${this.id} a=${this.address} t=${this.type} i=${this.interval}`);
+  logger.debug(`Add Element: id=${this.id} a=${this.address} t=${this.type} i=${this.interval}`);
 
   switch (this.type) {
-    // Coils ----------------------------------------------
+    // Coils, FC01 ----------------------------------------------
     case 'coil':
 
     function readCoil(callback) {
       //logger.debug('readCoil ' + self.address);
-      self.client.readCoils(self.address, 1, function (err, data) {
-        if (err) {
-          logger.error(`Error while reading Coil with address ${self.address}`, err);
-        }
-        else {
-          // logger.debug(`rc: ${self.address} ${data.value}`);
-          self.value = _.get(data, 'data[0]', undefined);
-          // In case of a changed value: emit new data
-          if (self.value !== self.prevValue) {
-            self.emit('changed', self.getObject());
-            self.prevValue = self.value;
-          }
-          // console.log(self.description, self.value);
-        }
-        callback(err);
+      self.client.readDiscreteInputs(self.address, 1, function (err, data) {
+        logger.info(`Read coil @ ${self.address}`);
+        self.handleBinaryRegister(err, data, callback);
       });
     }
 
       this.collector = readCoil;
       break;
 
-    // INPUT REGISTER  ------------------------------------
+    // Input Status, FC02 ----------------------------------------------
+    case 'inputStatus':
+
+    function readInputStatus(callback) {
+      //logger.debug('readInputStatus ' + self.address);
+      self.client.readDiscreteInputs(self.address, 1, function (err, data) {
+        logger.info(`Read input status @ ${self.address}`);
+        self.handleBinaryRegister(err, data, callback);
+      });
+    }
+
+      this.collector = readInputStatus;
+      break;
+
+    // INPUT REGISTER, FC04  ------------------------------------
     case 'inputRegister':
 
       this.collector = function (callback) {
         self.client.readInputRegisters(self.address, self.length, function (err, data) {
-          self.handleReadRegister(err, data, callback);
+          logger.info(`Read input register @ ${self.address}, length ${self.length}`);
+          self.handleDiscreteRegister(err, data, callback);
         })
       };
       break;
 
-    // HOLDING REGISTER  ----------------------------------
+    // HOLDING REGISTER, FC03  ----------------------------------
     case 'holdingRegister':
 
       this.collector = function (callback) {
         self.client.readHoldingRegisters(self.address, self.length, function (err, data) {
-          self.handleReadRegister(err, data, callback);
+          logger.info(`Read holding register @ ${self.address}, length ${self.length}`);
+          self.handleDiscreteRegister(err, data, callback);
         });
       };
       break;
@@ -126,9 +132,29 @@ util.inherits(ModbusElement, EventEmitter);
  * @param buffer
  * @returns {*}
  */
-ModbusElement.prototype.parse = function (buffer) {
-  let self = this;
-  switch (self.parser) {
+ModbusElement.prototype.parse = function (_buffer) {
+  let self   = this;
+  let parser = self.parser;
+  let buffer = undefined;
+
+  switch (parser) {
+    case 'uint32_MLE':
+    case 'int32_MLE':
+      // Mid-Little Endian (CDAB)
+      buffer    = Buffer.alloc(4);
+      buffer[0] = _buffer[2];
+      buffer[1] = _buffer[3];
+      buffer[2] = _buffer[0];
+      buffer[3] = _buffer[1];
+      break;
+
+    default:
+      // Big Endian (ABCD)
+      buffer = _buffer;
+      break;
+  }
+
+  switch (parser) {
     case 'uint8':
     case 'byte':
       // byte: just one byte value, print value in dec
@@ -143,11 +169,14 @@ ModbusElement.prototype.parse = function (buffer) {
       return buffer.readUInt16BE(0);
 
     case 'int32':
+    case 'int32_MLE':
       // word: MSB first, print value in dec
       return buffer.readInt32BE(0);
 
     case 'uint32':
+    case 'uint32_MLE':
       // word: MSB first, print value in dec
+      //logger.info(`UINT32: ${buffer[0]}, ${buffer[1]}, ${buffer[2]}, ${buffer[3]} `)
       return buffer.readUInt32BE(0);
 
     case 'float':
@@ -184,13 +213,13 @@ ModbusElement.prototype.parse = function (buffer) {
 };
 
 /**
- * Handle a register read access (holding or input register)
+ * Handle a discrete register read access (holding or input register)
  * @param err
  * @param data
  * @param callback
  * @returns {*}
  */
-ModbusElement.prototype.handleReadRegister = function (err, data, callback) {
+ModbusElement.prototype.handleDiscreteRegister = function (err, data, callback) {
   let self = this;
   if (err) {
     return callback(err);
@@ -204,6 +233,29 @@ ModbusElement.prototype.handleReadRegister = function (err, data, callback) {
       self.emit('changed', self.getObject());
       self.prevValue = self.value;
     }
+  }
+  callback(err);
+};
+
+/**
+ * Handle a binary register with read access
+ * @param err
+ * @param data
+ * @param callback
+ */
+ModbusElement.prototype.handleBinaryRegister = function (err, data, callback) {
+  if (err) {
+    logger.error(`Error while reading binary Input with address ${self.address}`, err);
+  }
+  else {
+    // logger.debug(`rc: ${self.address} ${data.buffer[0]}`);
+    self.value = _.get(data, 'buffer[0]', -99) !== 0;
+    // In case of a changed value: emit new data
+    if (self.value !== self.prevValue) {
+      self.emit('changed', self.getObject());
+      self.prevValue = self.value;
+    }
+    // console.log(self.description, self.value);
   }
   callback(err);
 };
