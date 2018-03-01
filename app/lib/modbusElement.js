@@ -244,6 +244,7 @@ ModbusElement.prototype.handleDiscreteRegister = function (err, data, callback) 
  * @param callback
  */
 ModbusElement.prototype.handleBinaryRegister = function (err, data, callback) {
+  let self = this;
   if (err) {
     logger.error(`Error while reading binary Input with address ${self.address}`, err);
   }
