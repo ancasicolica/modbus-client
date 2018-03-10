@@ -28,7 +28,8 @@ let loggerSettings = {
   }
 };
 
-const logger = new winston.Logger();
+const logger    = new winston.Logger();
+let loggerLevel = process.env.MODBUS_LOGGER_LEVEL ? process.env.MODBUS_LOGGER_LEVEL : 'info';
 winston.setLevels(loggerSettings.levels);
 winston.addColors(loggerSettings.colors);
 logger.add(winston.transports.Console, {level: 'debug', colorize: true});
@@ -41,6 +42,9 @@ logger.add(winston.transports.Console, {level: 'debug', colorize: true});
  * @param metadata
  */
 function log(module, level, message, metadata) {
+  if (loggerSettings.levels[level] < loggerSettings.levels[loggerLevel]) {
+    return;
+  }
   let info = moment().format() + ' ' + module + ': ';
   if (_.isObject(message)) {
     info += util.inspect(message);
@@ -63,6 +67,10 @@ module.exports = {
     logger.remove(transport);
   },
 
+  setLevel: function (level) {
+    loggerLevel = level;
+  },
+
   getLogger: function (moduleName) {
     return {
       fatal: function (message, metadata) {
@@ -78,7 +86,7 @@ module.exports = {
         log(moduleName, 'warn', message, metadata);
       },
       debug: function (message, metadata) {
-        log(moduleName, 'info', message, metadata); // using info as otherwise on stderr
+        log(moduleName, 'debug', message, metadata); // using info as otherwise on stderr
       },
       /**
        * Outputs data from a test (if any)

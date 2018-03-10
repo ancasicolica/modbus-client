@@ -75,8 +75,8 @@ function ModbusElement(client, element) {
 
     function readCoil(callback) {
       //logger.debug('readCoil ' + self.address);
-      self.client.readDiscreteInputs(self.address, 1, function (err, data) {
-        logger.info(`Read coil @ ${self.address}`);
+      self.client.readCoils(self.address, 1, function (err, data) {
+        logger.debug(`Read coil @ ${self.address}`);
         self.handleBinaryRegister(err, data, callback);
       });
     }
@@ -90,7 +90,7 @@ function ModbusElement(client, element) {
     function readInputStatus(callback) {
       //logger.debug('readInputStatus ' + self.address);
       self.client.readDiscreteInputs(self.address, 1, function (err, data) {
-        logger.info(`Read input status @ ${self.address}`);
+        logger.debug(`Read input status @ ${self.address}`);
         self.handleBinaryRegister(err, data, callback);
       });
     }
@@ -103,7 +103,7 @@ function ModbusElement(client, element) {
 
       this.collector = function (callback) {
         self.client.readInputRegisters(self.address, self.length, function (err, data) {
-          logger.info(`Read input register @ ${self.address}, length ${self.length}`);
+          logger.debug(`Read input register @ ${self.address}, length ${self.length}`);
           self.handleDiscreteRegister(err, data, callback);
         })
       };
@@ -114,7 +114,7 @@ function ModbusElement(client, element) {
 
       this.collector = function (callback) {
         self.client.readHoldingRegisters(self.address, self.length, function (err, data) {
-          logger.info(`Read holding register @ ${self.address}, length ${self.length}`);
+          logger.debug(`Read holding register @ ${self.address}, length ${self.length}`);
           self.handleDiscreteRegister(err, data, callback);
         });
       };
@@ -292,7 +292,7 @@ ModbusElement.prototype.setValue = function (value, callback) {
     case 'coil':
       value    = parseInt(value) !== 0;
       oldValue = self.value;
-      self.client.writeCoil(self.address, value)
+      self.client.writeCoil(self.address, value ? 1 : 0)
         .then(function (d) {
           logger.info(`Coil with address ${self.address} set to ${value}`, d);
           self.collect(err => {

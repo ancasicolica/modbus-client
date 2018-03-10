@@ -7,7 +7,7 @@
 }
 
 .warning-level {
-    background-color: yellow;
+    background-color: #F8F165;
     color: black;
 }
 
@@ -17,6 +17,6 @@
 }
 
 .normal-level {
-    background-color: green;
-    color: white;
+    background-color: #8af17d;
+    color: black;
 }
