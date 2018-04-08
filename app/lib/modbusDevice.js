@@ -100,6 +100,12 @@ ModbusDevice.prototype.periodicCollection = function () {
   self.collect(err => {
     if (err) {
       self.logger.error('Collection error', err);
+      // Most likely this is caused by loosing the connection, try to reconnect
+      self.connect(err => {
+        if (err) {
+          self.logger.error('Reconnect failed');
+        }
+      });
     }
     if (self.client.isOpen) {
       _.delay(self.periodicCollection.bind(self), self.interval);
